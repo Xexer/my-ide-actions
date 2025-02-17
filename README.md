@@ -11,6 +11,7 @@ Currently, IDE Actions cannot be saved in Git, so the IDE Actions must first be 
 
 | Object                       | Value                                                                                                       |
 |------------------------------|-------------------------------------------------------------------------------------------------------------|
+| Package                      | Z_MIA_ACTIONS                                                                                               |
 | IDE Action Name              | Z_MIA_NEW_CLASS                                                                                             |
 | Title                        | Create new class                                                                                            |
 | Summary                      | Creates a new class with interface and optionally a factory and an injector for decoupling and testability. |
