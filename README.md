@@ -23,6 +23,12 @@ Currently, IDE Actions cannot be saved in Git, so the IDE Actions must first be 
 
 ## Features
 
-Currently the following actions are included:
+Currently the following actions and features are included.
 
-- Create class - Creates a class and optionally the interface, factory and injector
+### Create class
+
+Creates a class and optionally the interface, factory and injector. Activate the action on a focused package, the information of the package name and prefix are generated. If the package is assigned to a transport, this transport is also proposed.
+
+![Create class Input](./img/image-01.png)
+
+Interface , Factory and Injector are not mandatory, if you delete the string, the objects and dependencies are not created.
