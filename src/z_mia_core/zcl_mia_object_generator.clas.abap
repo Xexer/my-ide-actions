@@ -63,12 +63,13 @@ CLASS zcl_mia_object_generator IMPLEMENTATION.
 
     DATA(operation_result) = operation->execute( ). " VALUE #( ( xco_cp_generation=>put_operation_option->skip_activation ) ) ).
 
-    IF operation_result->findings IS INITIAL.
-      result = CORRESPONDING #( run_setting ).
-      result-success = abap_true.
+    result = CORRESPONDING #( run_setting ).
+    result-findings = operation_result->findings.
+
+    IF result-findings->contain_errors( ).
+      result-success = abap_false.
     ELSE.
-      result-success  = abap_false.
-      result-findings = operation_result->findings.
+      result-success = abap_true.
     ENDIF.
   ENDMETHOD.
 

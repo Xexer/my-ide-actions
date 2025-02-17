@@ -49,8 +49,8 @@ CLASS zcl_mia_newclass_input IMPLEMENTATION.
     DATA input TYPE input.
 
     IF context IS BOUND.
-      DATA(focuse_object) = context->get_focused_resource( ).
-      input-package   = focuse_object->get_name( ).
+      DATA(focused_object) = context->get_focused_resource( ).
+      input-package   = focused_object->get_name( ).
       input-prefix    = zcl_mia_strings=>get_prefix_from_package( input-package ).
       input-transport = get_transport_for_object( input ).
     ENDIF.
