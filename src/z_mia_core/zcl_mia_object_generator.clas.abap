@@ -36,6 +36,11 @@ CLASS zcl_mia_object_generator DEFINITION
       IMPORTING specification TYPE REF TO if_xco_cp_gen_clas_s_form
                 method_name   TYPE if_xco_gen_clas_s_fo_d_section=>tv_method_name.
 
+    "! Validate the configuration
+    "! @parameter result | Messages
+    METHODS validate_configuration
+      RETURNING VALUE(result) TYPE sxco_t_messages.
+
 ENDCLASS.
 
 
@@ -43,15 +48,23 @@ CLASS zcl_mia_object_generator IMPLEMENTATION.
   METHOD zif_mia_object_generator~generate_objects_via_setting.
     run_setting = setting.
 
+    result-messages = validate_configuration( ).
+    IF result-messages IS NOT INITIAL.
+      result-success = abap_false.
+      RETURN.
+    ENDIF.
+
     DATA(operation) = xco_cp_generation=>environment->dev_system( run_setting-transport )->create_put_operation( ).
 
-    generate_interface( operation ).
     genarate_class( operation ).
+    generate_interface( operation ).
     genarate_factory( operation ).
     genarate_injector( operation ).
 
     DATA(operation_result) = operation->execute( ). " VALUE #( ( xco_cp_generation=>put_operation_option->skip_activation ) ) ).
+
     IF operation_result->findings IS INITIAL.
+      result = CORRESPONDING #( run_setting ).
       result-success = abap_true.
     ELSE.
       result-success  = abap_false.
@@ -85,8 +98,14 @@ CLASS zcl_mia_object_generator IMPLEMENTATION.
     specification->set_short_description( |{ run_setting-description } ({ TEXT-002 })| ).
 
     specification->definition->set_create_visibility( xco_cp_abap_objects=>visibility->private ).
-    specification->definition->set_global_friends( VALUE #( ( run_setting-factory ) ) ).
-    specification->definition->add_interface( run_setting-interface ).
+
+    IF run_setting-interface IS NOT INITIAL.
+      specification->definition->add_interface( run_setting-interface ).
+    ENDIF.
+
+    IF run_setting-factory IS NOT INITIAL.
+      specification->definition->set_global_friends( VALUE #( ( run_setting-factory ) ) ).
+    ENDIF.
   ENDMETHOD.
 
 
@@ -149,19 +168,56 @@ CLASS zcl_mia_object_generator IMPLEMENTATION.
 
 
   METHOD add_injector_content.
-    DATA attribute_name TYPE sxco_ao_component_name.
-
     specification->definition->set_global_friends( VALUE #( ( run_setting-injector ) ) ).
 
-    attribute_name = CONV #( run_setting-name ).
-    specification->definition->section-private->add_class_data( attribute_name )->set_type(
+    specification->definition->section-private->add_class_data( run_setting-name )->set_type(
         xco_cp_abap=>interface( run_setting-interface ) ).
 
     specification->implementation->add_method( method_name )->set_source( VALUE #(
-                                                                              ( |IF { attribute_name } IS BOUND.| )
-                                                                              ( |RETURN { attribute_name }.| )
+                                                                              ( |IF { run_setting-name } IS BOUND.| )
+                                                                              ( |RETURN { run_setting-name }.| )
                                                                               ( `ELSE.` )
                                                                               ( |RETURN NEW { run_setting-class }( ).| )
                                                                               ( `ENDIF.` ) ) ).
+  ENDMETHOD.
+
+
+  METHOD validate_configuration.
+    DATA dummy TYPE string ##NEEDED.
+
+    IF run_setting-transport IS INITIAL.
+      MESSAGE e001(z_mia_core) INTO dummy.
+      INSERT xco_cp=>sy->message( ) INTO TABLE result.
+    ENDIF.
+
+    IF run_setting-package IS INITIAL.
+      MESSAGE e002(z_mia_core) INTO dummy.
+      INSERT xco_cp=>sy->message( ) INTO TABLE result.
+    ENDIF.
+
+    IF run_setting-prefix IS INITIAL.
+      MESSAGE e003(z_mia_core) INTO dummy.
+      INSERT xco_cp=>sy->message( ) INTO TABLE result.
+    ENDIF.
+
+    IF run_setting-description IS INITIAL.
+      MESSAGE e004(z_mia_core) INTO dummy.
+      INSERT xco_cp=>sy->message( ) INTO TABLE result.
+    ENDIF.
+
+    IF run_setting-class IS INITIAL.
+      MESSAGE e005(z_mia_core) INTO dummy.
+      INSERT xco_cp=>sy->message( ) INTO TABLE result.
+    ENDIF.
+
+    IF run_setting-interface IS INITIAL AND ( run_setting-factory IS NOT INITIAL OR run_setting-injector IS NOT INITIAL ).
+      MESSAGE e006(z_mia_core) INTO dummy.
+      INSERT xco_cp=>sy->message( ) INTO TABLE result.
+    ENDIF.
+
+    IF run_setting-factory IS INITIAL AND run_setting-injector IS NOT INITIAL.
+      MESSAGE e007(z_mia_core) INTO dummy.
+      INSERT xco_cp=>sy->message( ) INTO TABLE result.
+    ENDIF.
   ENDMETHOD.
 ENDCLASS.

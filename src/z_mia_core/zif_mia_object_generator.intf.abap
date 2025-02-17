@@ -16,8 +16,15 @@ INTERFACE zif_mia_object_generator
          END OF setting.
 
   TYPES: BEGIN OF generation_result,
-           success  TYPE abap_boolean,
-           findings TYPE REF TO if_xco_gen_o_findings,
+           success   TYPE abap_boolean,
+           findings  TYPE REF TO if_xco_gen_o_findings,
+           messages  TYPE sxco_t_messages,
+           transport TYPE sxco_transport,
+           package   TYPE sxco_package,
+           interface TYPE sxco_ao_object_name,
+           class     TYPE sxco_ao_object_name,
+           factory   TYPE sxco_ao_object_name,
+           injector  TYPE sxco_ao_object_name,
          END OF generation_result.
 
   "! Generate Objects from settings

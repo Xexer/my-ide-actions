@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_MSAG" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <T100A>
+    <ARBGB>Z_MIA_CORE</ARBGB>
+    <MASTERLANG>E</MASTERLANG>
+    <STEXT>MIA: Messages</STEXT>
+   </T100A>
+   <T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>Z_MIA_CORE</ARBGB>
+     <MSGNR>000</MSGNR>
+     <TEXT>*** MIA: Messages ***</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>Z_MIA_CORE</ARBGB>
+     <MSGNR>001</MSGNR>
+     <TEXT>Transport must not be empty</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>Z_MIA_CORE</ARBGB>
+     <MSGNR>002</MSGNR>
+     <TEXT>Package must be filled</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>Z_MIA_CORE</ARBGB>
+     <MSGNR>003</MSGNR>
+     <TEXT>Prefix is ​​required</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>Z_MIA_CORE</ARBGB>
+     <MSGNR>004</MSGNR>
+     <TEXT>The description must be filled</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>Z_MIA_CORE</ARBGB>
+     <MSGNR>005</MSGNR>
+     <TEXT>At least the class for the generation is required.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>Z_MIA_CORE</ARBGB>
+     <MSGNR>006</MSGNR>
+     <TEXT>Interface is required for Factory and/or Injector</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>Z_MIA_CORE</ARBGB>
+     <MSGNR>007</MSGNR>
+     <TEXT>The factory is required for the injector</TEXT>
+    </T100>
+   </T100>
+  </asx:values>
+ </asx:abap>
+</abapGit>
