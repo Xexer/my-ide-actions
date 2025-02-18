@@ -32,3 +32,8 @@ Creates a class and optionally the interface, factory and injector. Activate the
 ![Create class Input](./img/image-01.png)
 
 Interface , Factory and Injector are not mandatory, if you delete the string, the objects and dependencies are not created.
+
+## Public Material
+
+- Software-Heroes: [ADT - My IDE Actions](https://software-heroes.com/en/blog/tools-adt-my-ide-actions-en)
+- SAP Community: [[MIA] My IDE Actions](https://community.sap.com/t5/technology-blogs-by-members/mia-my-ide-actions/ba-p/14019000)
