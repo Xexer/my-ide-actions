@@ -16,6 +16,11 @@ CLASS zcl_mia_core_factory DEFINITION
     "! @parameter result | HTML Output
     CLASS-METHODS create_html_output
       RETURNING VALUE(result) TYPE REF TO zif_mia_html_output.
+
+    "! Generate SwH-Tool Access
+    "! @parameter result | Tool Access
+    CLASS-METHODS create_swh_tools
+      RETURNING VALUE(result) TYPE REF TO zif_mia_swh_tool_api.
 ENDCLASS.
 
 
@@ -32,5 +37,10 @@ CLASS zcl_mia_core_factory IMPLEMENTATION.
 
   METHOD create_html_output.
     RETURN NEW zcl_mia_html_output( ).
+  ENDMETHOD.
+
+
+  METHOD create_swh_tools.
+    RETURN NEW zcl_mia_swh_tool_api( ).
   ENDMETHOD.
 ENDCLASS.
