@@ -32,7 +32,7 @@ CLASS zcl_mia_swh_tool_api IMPLEMENTATION.
 
     DATA(uri) = get_uri(
         endpoint  = endpoints-convert_select
-        parameter = |statement={ base64_statement }&abap-cloud={ request-abap_cloud }&new={ request-new_syntax }| ).
+        parameter = |statement={ base64_statement }&abap-cloud={ request-abap_cloud }| ).
 
     TRY.
         call_api_endpoint( EXPORTING uri    = uri

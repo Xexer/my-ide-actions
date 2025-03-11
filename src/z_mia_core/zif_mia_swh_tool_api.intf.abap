@@ -16,7 +16,6 @@ INTERFACE zif_mia_swh_tool_api
   TYPES: BEGIN OF convert_request,
            statement  TYPE string,
            abap_cloud TYPE abap_bool,
-           new_syntax TYPE abap_bool,
          END OF convert_request.
 
   "! Convert SELECT statement to the new version with CDS views
