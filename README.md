@@ -27,7 +27,7 @@ Currently, IDE Actions cannot be saved in Git, so the IDE Actions must first be 
 | Object                       | Value                                                                                                       |
 |------------------------------|-------------------------------------------------------------------------------------------------------------|
 | Package                      | Z_MIA_ACTIONS                                                                                               |
-| IDE Action Name              | Z_MIA_NEW_CLASS                                                                                             |
+| IDE Action Name              | Z_MIA_SELECT_CONVERTER                                                                                      |
 | Title                        | Migrate SELECT statement                                                                                    |
 | Summary                      | Migrates an Open SQL statement to ABAP SQL in the new notation and replaces tables with Core Data Services. |
 | Implementing Class           | ZCL_MIA_SELECTCONVERT_ACTION                                                                                |
