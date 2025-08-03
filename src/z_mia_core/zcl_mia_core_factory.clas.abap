@@ -21,6 +21,11 @@ CLASS zcl_mia_core_factory DEFINITION
     "! @parameter result | Tool Access
     CLASS-METHODS create_swh_tools
       RETURNING VALUE(result) TYPE REF TO zif_mia_swh_tool_api.
+
+    "! Generate access to GitHub
+    "! @parameter result | GitHub Actions
+    CLASS-METHODS create_github_access
+      RETURNING VALUE(result) TYPE REF TO zif_mia_github_api.
 ENDCLASS.
 
 
@@ -42,5 +47,10 @@ CLASS zcl_mia_core_factory IMPLEMENTATION.
 
   METHOD create_swh_tools.
     RETURN NEW zcl_mia_swh_tool_api( ).
+  ENDMETHOD.
+
+
+  METHOD create_github_access.
+    RETURN NEW zcl_mia_github_api( ).
   ENDMETHOD.
 ENDCLASS.
