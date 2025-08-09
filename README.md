@@ -5,7 +5,7 @@ Since release 2502, there have been IDE Actions in the ABAP Environment. This ma
 
 Currently, IDE Actions cannot be saved in Git, so the IDE Actions must first be created after installation. Here you will find all steps to create them.
 
-### Create class
+### Create new class
 
 ![Create class Action](./img/image-00.png)
 
@@ -35,6 +35,35 @@ Currently, IDE Actions cannot be saved in Git, so the IDE Actions must first be 
 | Number of Focused Resources  | One                                                                                                         |
 | Object Type (Filter)         | CLAS                                                                                                        |
 
+### Code Snippets
+
+![Create class Action](./img/image-04.png)
+
+| Object                       | Value                                                                                                       |
+|------------------------------|-------------------------------------------------------------------------------------------------------------|
+| Package                      | Z_MIA_ACTIONS                                                                                               |
+| IDE Action Name              | Z_MIA_CODE_SNIPPETS                                                                                         |
+| Title                        | Generate Code Snippet                                                                                       |
+| Summary                      | Choose from various code snippets and increase your development speed.                                      |
+| Implementing Class           | ZCL_MIA_CODE_SNIPPET_ACTION                                                                                 |
+| Input UI Configuration Class | ZCL_MIA_CODE_SNIPPET_INPUT                                                                                  |
+| Number of Focused Resources  | One                                                                                                         |
+| Object Type (Filter)         | BDEF; CLAS; DDLS; TABL                                                                                      |
+
+### Scope Launchpad
+
+![Create class Action](./img/image-05.png)
+
+| Object                       | Value                                                                                                       |
+|------------------------------|-------------------------------------------------------------------------------------------------------------|
+| Package                      | Z_MIA_ACTIONS                                                                                               |
+| IDE Action Name              | Z_MIA_SCOPING                                                                                               |
+| Title                        | Scope Launchpad                                                                                             |
+| Summary                      | Scope Launchpad Space and Page template to be available in configuration and for role assignment.           |
+| Implementing Class           | ZCL_MIA_SCOPING_ACTION                                                                                      |
+| Input UI Configuration Class | ZCL_MIA_SCOPING_INPUT                                                                                       |
+| Number of Focused Resources  | At least One                                                                                                |
+| Object Type (Filter)         | UIPG; UIST                                                                                                  |
 
 ## Features
 
@@ -56,6 +85,16 @@ Converts a SELECT statement from classic Open SQL to ABAP SQL and exchanges the 
 ![Convert statement](./img/image-03.png)
 
 The SELECT must be marked, then the statement can be replaced.
+
+### Code Snippets
+
+It takes various code snippets from the [GitHub](https://github.com/Xexer/abap-code-snippets) repository and allows you to parameterize and insert them into the source code. Currently, various objects are supported.
+
+![Code snippets](./img/image-06.png)
+
+### Scope Launchpad
+
+Scope the Launchpad Content as Spaces and Pages that have been created with the ABAP Development Tools. More informations about scoping in this [article](https://software-heroes.com/en/blog/btp-pages-and-spaces-adt).
 
 ## Public Material
 
