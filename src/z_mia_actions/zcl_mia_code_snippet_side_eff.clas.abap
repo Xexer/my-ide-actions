@@ -29,6 +29,7 @@ CLASS zcl_mia_code_snippet_side_eff IMPLEMENTATION.
 
           WHEN zcl_mia_code_snippet_input=>template_value_cds-cds_vh_data_element.
             setting-data_element = abap_true.
+            setting-field        = abap_true.
 
         ENDCASE.
 

@@ -59,6 +59,15 @@ CLASS zcl_mia_html_output IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD zif_mia_html_output~generate_generic_output.
+    CLEAR output.
+
+    generate_table( table ).
+
+    RETURN finalize_document( ).
+  ENDMETHOD.
+
+
   METHOD build_object_table.
     DATA(objects) = VALUE zif_mia_html_output=>generated_objects( ( object_type = TEXT-006 name = TEXT-007 ) ).
 

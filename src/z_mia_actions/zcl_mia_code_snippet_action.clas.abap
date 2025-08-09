@@ -98,7 +98,8 @@ CLASS zcl_mia_code_snippet_action IMPLEMENTATION.
     LOOP AT tags INTO DATA(tag).
       result = replace( val  = result
                         sub  = |[[{ tag-tag }]]|
-                        with = tag-replace_with ).
+                        with = tag-replace_with
+                        occ  = 0 ).
     ENDLOOP.
   ENDMETHOD.
 ENDCLASS.

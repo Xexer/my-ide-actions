@@ -21,4 +21,11 @@ INTERFACE zif_mia_html_output
   METHODS generate_html_output
     IMPORTING generation_result TYPE zif_mia_object_generator=>generation_result
     RETURNING VALUE(result)     TYPE string.
+
+  "! Generate an output from any table
+  "! @parameter table  | Any table
+  "! @parameter result | Output as HTML
+  METHODS generate_generic_output
+    IMPORTING !table        TYPE REF TO data
+    RETURNING VALUE(result) TYPE string.
 ENDINTERFACE.

@@ -103,8 +103,8 @@ CLASS zcl_mia_code_snippet_input IMPLEMENTATION.
     configuration->get_element( `template_cds` )->set_sideeffect( after_update = abap_true ).
     configuration->get_element( `template_class` )->set_sideeffect( after_update = abap_true ).
     configuration->get_element( `template_behavior` )->set_sideeffect( after_update = abap_true ).
-    configuration->get_element( `entity` )->set_types( VALUE #( ( `DDLS/DF` ) ) ).
-    configuration->get_element( `data_element` )->set_types( VALUE #( ( `DTEL/DE` ) ) ).
+*    configuration->get_element( `entity` )->set_types( VALUE #( ( `DDLS/DF` ) ) ).
+*    configuration->get_element( `data_element` )->set_types( VALUE #( ( `DTEL/DE` ) ) ).
 
     CASE input-type.
       WHEN zcl_mia_code_snippet_action=>supported_types-table.
