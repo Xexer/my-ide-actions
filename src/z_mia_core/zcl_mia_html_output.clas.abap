@@ -69,26 +69,37 @@ CLASS zcl_mia_html_output IMPLEMENTATION.
 
 
   METHOD build_object_table.
+    DATA(link_factory) = zcl_mia_core_factory=>create_object_link( ).
+    DATA(link) = ``.
+
     DATA(objects) = VALUE zif_mia_html_output=>generated_objects( ( object_type = TEXT-006 name = TEXT-007 ) ).
 
     IF generation_result-interface IS NOT INITIAL.
+      link = link_factory->get_hmtl_link_for_object( object_type = link_factory->supported_objects-interface
+                                                     object      = generation_result-interface ).
       INSERT VALUE #( object_type = TEXT-002
-                      name        = generation_result-interface ) INTO TABLE objects.
+                      name        = link ) INTO TABLE objects.
     ENDIF.
 
     IF generation_result-class IS NOT INITIAL.
+      link = link_factory->get_hmtl_link_for_object( object_type = link_factory->supported_objects-class
+                                                     object      = generation_result-class ).
       INSERT VALUE #( object_type = TEXT-003
-                      name        = generation_result-class ) INTO TABLE objects.
+                      name        = link ) INTO TABLE objects.
     ENDIF.
 
     IF generation_result-factory IS NOT INITIAL.
+      link = link_factory->get_hmtl_link_for_object( object_type = link_factory->supported_objects-class
+                                                     object      = generation_result-factory ).
       INSERT VALUE #( object_type = TEXT-004
-                      name        = generation_result-factory ) INTO TABLE objects.
+                      name        = link ) INTO TABLE objects.
     ENDIF.
 
     IF generation_result-injector IS NOT INITIAL.
+      link = link_factory->get_hmtl_link_for_object( object_type = link_factory->supported_objects-class
+                                                     object      = generation_result-injector ).
       INSERT VALUE #( object_type = TEXT-005
-                      name        = generation_result-injector ) INTO TABLE objects.
+                      name        = link ) INTO TABLE objects.
     ENDIF.
 
     generate_table( REF #( objects ) ).

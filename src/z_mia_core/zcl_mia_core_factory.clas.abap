@@ -33,6 +33,11 @@ CLASS zcl_mia_core_factory DEFINITION
     CLASS-METHODS create_class_analyzer
       IMPORTING class_name    TYPE zif_mia_class_analyzer=>class_name
       RETURNING VALUE(result) TYPE REF TO zif_mia_class_analyzer.
+
+    "! Generate Object Link Creator
+    "! @parameter result | Object Link Creator
+    CLASS-METHODS create_object_link
+      RETURNING VALUE(result) TYPE REF TO zif_mia_object_link.
 ENDCLASS.
 
 
@@ -64,5 +69,10 @@ CLASS zcl_mia_core_factory IMPLEMENTATION.
 
   METHOD create_class_analyzer.
     RETURN NEW zcl_mia_class_analyzer( class_name ).
+  ENDMETHOD.
+
+
+  METHOD create_object_link.
+    RETURN NEW zcl_mia_object_link( ).
   ENDMETHOD.
 ENDCLASS.
