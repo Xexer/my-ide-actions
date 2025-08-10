@@ -35,10 +35,10 @@ CLASS zcl_mia_newclass_side_effect IMPLEMENTATION.
     DATA(name) = zcl_mia_core_factory=>create_name_generator( ).
 
     TRY.
-        popup_data-interface = name->generate_interface_name( CORRESPONDING #( popup_data ) ).
-        popup_data-class     = name->generate_class_name( CORRESPONDING #( popup_data ) ).
-        popup_data-factory   = name->generate_factory_name( CORRESPONDING #( popup_data ) ).
-        popup_data-injector  = name->generate_injector_name( CORRESPONDING #( popup_data ) ).
+        popup_data-objects-interface = to_upper( name->generate_interface_name( CORRESPONDING #( popup_data ) ) ).
+        popup_data-objects-class     = to_upper( name->generate_class_name( CORRESPONDING #( popup_data ) ) ).
+        popup_data-objects-factory   = to_upper( name->generate_factory_name( CORRESPONDING #( popup_data ) ) ).
+        popup_data-objects-injector  = to_upper( name->generate_injector_name( CORRESPONDING #( popup_data ) ) ).
 
       CATCH zcx_mia_error.
         RETURN.

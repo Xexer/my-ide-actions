@@ -7,7 +7,10 @@ CLASS zcl_mia_object_generator DEFINITION
     INTERFACES zif_mia_object_generator.
 
   PRIVATE SECTION.
-    DATA run_setting TYPE zif_mia_object_generator=>setting.
+    DATA run_setting      TYPE zif_mia_object_generator=>setting.
+    DATA add_to_factory   TYPE abap_boolean.
+    DATA add_to_injector  TYPE abap_boolean.
+    DATA activate_objects TYPE abap_boolean VALUE abap_true.
 
     "! Generate Interface
     "! @parameter operation | XCO Operation
@@ -36,10 +39,27 @@ CLASS zcl_mia_object_generator DEFINITION
       IMPORTING specification TYPE REF TO if_xco_cp_gen_clas_s_form
                 method_name   TYPE if_xco_gen_clas_s_fo_d_section=>tv_method_name.
 
+    "! Extend the Factory
+    "! @parameter operation | XCO Operation
+    METHODS extend_factory
+      IMPORTING operation TYPE REF TO if_xco_cp_gen_clas_d_o_patch.
+
+    "! Extend the Injector
+    "! @parameter operation | XCO Operation
+    METHODS extend_injector
+      IMPORTING operation TYPE REF TO if_xco_cp_gen_clas_d_o_patch.
+
     "! Validate the configuration
     "! @parameter result | Messages
     METHODS validate_configuration
       RETURNING VALUE(result) TYPE sxco_t_messages.
+
+    "! Check if the objects should be added to factory and injector
+    METHODS set_additional_settings.
+
+    METHODS extend_injector_content
+      IMPORTING !object     TYPE REF TO if_xco_cp_gen_clas_d_o_pat_obj
+                method_name TYPE sxco_ao_component_name.
 
 ENDCLASS.
 
@@ -54,16 +74,37 @@ CLASS zcl_mia_object_generator IMPLEMENTATION.
       RETURN.
     ENDIF.
 
-    DATA(operation) = xco_cp_generation=>environment->dev_system( run_setting-transport )->create_put_operation( ).
+    set_additional_settings( ).
 
-    genarate_class( operation ).
-    generate_interface( operation ).
-    genarate_factory( operation ).
-    genarate_injector( operation ).
+    DATA(put_operation) = xco_cp_generation=>environment->dev_system( run_setting-transport )->create_put_operation( ).
+    DATA(patch_operation) = xco_cp_generation=>environment->dev_system( run_setting-transport )->for-clas->create_patch_operation( ).
 
-    DATA(operation_result) = operation->execute( ). " VALUE #( ( xco_cp_generation=>put_operation_option->skip_activation ) ) ).
+    genarate_class( put_operation ).
+    generate_interface( put_operation ).
+
+    IF add_to_factory = abap_true.
+      extend_factory( patch_operation ).
+    ELSE.
+      genarate_factory( put_operation ).
+    ENDIF.
+
+    IF add_to_injector = abap_true.
+      extend_injector( patch_operation ).
+    ELSE.
+      genarate_injector( put_operation ).
+    ENDIF.
 
     result = CORRESPONDING #( run_setting ).
+
+    IF activate_objects = abap_true.
+      DATA(operation_result) = put_operation->execute( ).
+
+      DATA(operation_patch_result) = patch_operation->execute( ).
+      result-findings_patch = operation_patch_result->findings.
+    ELSE.
+      operation_result = put_operation->execute( VALUE #( ( xco_cp_generation=>put_operation_option->skip_activation ) ) ).
+    ENDIF.
+
     result-findings = operation_result->findings.
 
     IF result-findings->contain_errors( ).
@@ -127,7 +168,7 @@ CLASS zcl_mia_object_generator IMPLEMENTATION.
     specification->definition->set_abstract( ).
     specification->definition->set_final( ).
 
-    method_name = |CREATE_{ run_setting-name }|.
+    method_name = |CREATE_{ run_setting-inst_name }|.
     DATA(method) = specification->definition->section-public->add_class_method( method_name ).
     method->add_returning_parameter( 'RESULT' )->set_type( xco_cp_abap=>interface( run_setting-interface ) ).
 
@@ -159,11 +200,11 @@ CLASS zcl_mia_object_generator IMPLEMENTATION.
     specification->definition->set_final( ).
     specification->definition->set_for_testing( ).
 
-    method_name = |INJECT_{ run_setting-name }|.
+    method_name = |INJECT_{ run_setting-inst_name }|.
     DATA(method) = specification->definition->section-public->add_class_method( method_name ).
     method->add_importing_parameter( 'DOUBLE' )->set_type( xco_cp_abap=>interface( run_setting-interface ) ).
 
-    method_content = |{ run_setting-factory }=>{ run_setting-name } = double.|.
+    method_content = |{ run_setting-factory }=>double_{ run_setting-inst_name } = double.|.
     specification->implementation->add_method( method_name )->set_source( VALUE #( ( method_content ) ) ).
   ENDMETHOD.
 
@@ -171,15 +212,28 @@ CLASS zcl_mia_object_generator IMPLEMENTATION.
   METHOD add_injector_content.
     specification->definition->set_global_friends( VALUE #( ( run_setting-injector ) ) ).
 
-    specification->definition->section-private->add_class_data( run_setting-name )->set_type(
+    specification->definition->section-private->add_class_data( |double_{ run_setting-inst_name }| )->set_type(
         xco_cp_abap=>interface( run_setting-interface ) ).
 
-    specification->implementation->add_method( method_name )->set_source( VALUE #(
-                                                                              ( |IF { run_setting-name } IS BOUND.| )
-                                                                              ( |RETURN { run_setting-name }.| )
-                                                                              ( `ELSE.` )
-                                                                              ( |RETURN NEW { run_setting-class }( ).| )
-                                                                              ( `ENDIF.` ) ) ).
+    specification->implementation->add_method( method_name )->set_source(
+        VALUE #( ( |IF double_{ run_setting-inst_name } IS BOUND.| )
+                 ( |  RETURN double_{ run_setting-inst_name }.| )
+                 ( `ELSE.` )
+                 ( |  RETURN NEW { run_setting-class }( ).| )
+                 ( `ENDIF.` ) ) ).
+  ENDMETHOD.
+
+
+  METHOD extend_injector_content.
+    object->for-insert->definition->section-private->add_class_data( |double_{ run_setting-inst_name }| )->set_type(
+        xco_cp_abap=>interface( run_setting-interface ) ).
+
+    object->for-insert->implementation->add_method( CONV #( method_name ) )->set_source(
+        VALUE #( ( |IF double_{ run_setting-inst_name } IS BOUND.| )
+                 ( |  RETURN double_{ run_setting-inst_name }.| )
+                 ( `ELSE.` )
+                 ( |  RETURN NEW { run_setting-class }( ).| )
+                 ( `ENDIF.` ) ) ).
   ENDMETHOD.
 
 
@@ -220,5 +274,63 @@ CLASS zcl_mia_object_generator IMPLEMENTATION.
       MESSAGE e007(z_mia_core) INTO dummy.
       INSERT xco_cp=>sy->message( ) INTO TABLE result.
     ENDIF.
+  ENDMETHOD.
+
+
+  METHOD set_additional_settings.
+    DATA(factory) = xco_cp_abap=>class( run_setting-factory ).
+    IF factory->exists( ).
+      add_to_factory = abap_true.
+    ENDIF.
+
+    DATA(injector) = xco_cp_abap=>class( run_setting-injector ).
+    IF injector->exists( ).
+      add_to_injector = abap_true.
+    ENDIF.
+  ENDMETHOD.
+
+
+  METHOD extend_factory.
+    DATA method_name    TYPE sxco_ao_component_name.
+    DATA method_content TYPE string.
+
+    IF run_setting-factory IS INITIAL.
+      RETURN.
+    ENDIF.
+
+    DATA(factory_object) = operation->add_object( run_setting-factory ).
+
+    method_name = |CREATE_{ run_setting-inst_name }|.
+    DATA(method) = factory_object->for-insert->definition->section-public->add_class_method( method_name ).
+    method->add_returning_parameter( 'RESULT' )->set_type( xco_cp_abap=>interface( run_setting-interface ) ).
+
+    IF run_setting-injector IS INITIAL.
+      method_content = |RETURN NEW { run_setting-class }( ).|.
+      factory_object->for-insert->implementation->add_method( CONV #( method_name ) )->set_source(
+          VALUE #( ( method_content ) ) ).
+    ELSE.
+      extend_injector_content( object      = factory_object
+                               method_name = method_name ).
+    ENDIF.
+  ENDMETHOD.
+
+
+  METHOD extend_injector.
+    DATA method_name    TYPE sxco_ao_component_name.
+    DATA method_content TYPE string.
+
+    IF run_setting-injector IS INITIAL.
+      RETURN.
+    ENDIF.
+
+    DATA(injector_object) = operation->add_object( run_setting-injector ).
+
+    method_name = |INJECT_{ run_setting-inst_name }|.
+    DATA(method) = injector_object->for-insert->definition->section-public->add_class_method( method_name ).
+    method->add_importing_parameter( 'DOUBLE' )->set_type( xco_cp_abap=>interface( run_setting-interface ) ).
+
+    method_content = |{ run_setting-factory }=>double_{ run_setting-inst_name } = double.|.
+    injector_object->for-insert->implementation->add_method( CONV #( method_name ) )->set_source(
+        VALUE #( ( method_content ) ) ).
   ENDMETHOD.
 ENDCLASS.

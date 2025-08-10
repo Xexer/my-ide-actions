@@ -22,8 +22,14 @@ CLASS zcl_mia_newclass_action IMPLEMENTATION.
         RETURN.
     ENDTRY.
 
+    DATA(setting) = CORRESPONDING zif_mia_object_generator=>setting( popup_data MAPPING
+      interface = objects-interface
+      class = objects-class
+      factory = objects-factory
+      injector = objects-injector ).
+
     DATA(generator) = zcl_mia_core_factory=>create_object_generator( ).
-    DATA(generation_result) = generator->generate_objects_via_setting( CORRESPONDING #( popup_data ) ).
+    DATA(generation_result) = generator->generate_objects_via_setting( setting ).
 
     DATA(output) = zcl_mia_core_factory=>create_html_output( ).
     DATA(html_output) = output->generate_html_output( generation_result ).
