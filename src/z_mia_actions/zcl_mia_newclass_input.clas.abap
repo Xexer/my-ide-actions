@@ -27,7 +27,6 @@ CLASS zcl_mia_newclass_input DEFINITION
         "! $required
         "! $maxLength 30
         package     TYPE sxco_package,
-        "! $required
         "! $maxLength 20
         transport   TYPE sxco_transport,
         "! $required
