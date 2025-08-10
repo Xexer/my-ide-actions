@@ -26,6 +26,13 @@ CLASS zcl_mia_core_factory DEFINITION
     "! @parameter result | GitHub Actions
     CLASS-METHODS create_github_access
       RETURNING VALUE(result) TYPE REF TO zif_mia_github_api.
+
+    "! Generate class analyzer for Consumption Models
+    "! @parameter class_name | Name of the class
+    "! @parameter result     | Class analyzer
+    CLASS-METHODS create_class_analyzer
+      IMPORTING class_name    TYPE zif_mia_class_analyzer=>class_name
+      RETURNING VALUE(result) TYPE REF TO zif_mia_class_analyzer.
 ENDCLASS.
 
 
@@ -52,5 +59,10 @@ CLASS zcl_mia_core_factory IMPLEMENTATION.
 
   METHOD create_github_access.
     RETURN NEW zcl_mia_github_api( ).
+  ENDMETHOD.
+
+
+  METHOD create_class_analyzer.
+    RETURN NEW zcl_mia_class_analyzer( class_name ).
   ENDMETHOD.
 ENDCLASS.
