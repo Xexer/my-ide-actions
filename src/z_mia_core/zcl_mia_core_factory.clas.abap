@@ -1,11 +1,19 @@
 CLASS zcl_mia_core_factory DEFINITION
-  PUBLIC ABSTRACT FINAL.
+  PUBLIC ABSTRACT FINAL
+  CREATE PUBLIC.
 
   PUBLIC SECTION.
     "! Generate Object Generator
     "! @parameter result | Object Generator
     CLASS-METHODS create_object_generator
       RETURNING VALUE(result) TYPE REF TO zif_mia_object_generator.
+
+    "! Generate RAP Analyzer Tool
+    "! @parameter service_name | Name of the Service
+    "! @parameter result       | RAP Analyzer
+    CLASS-METHODS create_rap_analyzer
+      IMPORTING service_name  TYPE string
+      RETURNING VALUE(result) TYPE REF TO zif_mia_rap_analyzer.
 
     "! Generate Name Generator
     "! @parameter result | Name Generator
@@ -74,5 +82,10 @@ CLASS zcl_mia_core_factory IMPLEMENTATION.
 
   METHOD create_object_link.
     RETURN NEW zcl_mia_object_link( ).
+  ENDMETHOD.
+
+
+  METHOD create_rap_analyzer.
+    RETURN NEW zcl_mia_rap_analyzer( service_name ).
   ENDMETHOD.
 ENDCLASS.
