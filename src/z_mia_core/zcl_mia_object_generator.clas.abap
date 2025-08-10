@@ -7,9 +7,16 @@ CLASS zcl_mia_object_generator DEFINITION
     INTERFACES zif_mia_object_generator.
 
   PRIVATE SECTION.
+    "! Actual run settings for creation process
     DATA run_setting      TYPE zif_mia_object_generator=>setting.
+
+    "! Factory was found and should be extended
     DATA add_to_factory   TYPE abap_boolean.
+
+    "! Injector was found and should be extended
     DATA add_to_injector  TYPE abap_boolean.
+
+    "! Mode for object activation
     DATA activate_objects TYPE abap_boolean VALUE abap_true.
 
     "! Generate Interface
@@ -57,6 +64,9 @@ CLASS zcl_mia_object_generator DEFINITION
     "! Check if the objects should be added to factory and injector
     METHODS set_additional_settings.
 
+    "! Extend the logic for the injector
+    "! @parameter object      | Factory class object
+    "! @parameter method_name | Name of the method
     METHODS extend_injector_content
       IMPORTING !object     TYPE REF TO if_xco_cp_gen_clas_d_o_pat_obj
                 method_name TYPE sxco_ao_component_name.
@@ -94,20 +104,19 @@ CLASS zcl_mia_object_generator IMPLEMENTATION.
       genarate_injector( put_operation ).
     ENDIF.
 
-    result = CORRESPONDING #( run_setting ).
-
     IF activate_objects = abap_true.
       DATA(operation_result) = put_operation->execute( ).
-
       DATA(operation_patch_result) = patch_operation->execute( ).
-      result-findings_patch = operation_patch_result->findings.
     ELSE.
       operation_result = put_operation->execute( VALUE #( ( xco_cp_generation=>put_operation_option->skip_activation ) ) ).
+      operation_patch_result = patch_operation->execute( ).
     ENDIF.
 
-    result-findings = operation_result->findings.
+    result = CORRESPONDING #( run_setting ).
+    result-findings       = operation_result->findings.
+    result-findings_patch = operation_patch_result->findings.
 
-    IF result-findings->contain_errors( ).
+    IF result-findings->contain_errors( ) OR result-findings_patch->contain_errors( ).
       result-success = abap_false.
     ELSE.
       result-success = abap_true.
