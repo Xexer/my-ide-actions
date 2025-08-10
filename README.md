@@ -65,6 +65,21 @@ Currently, IDE Actions cannot be saved in Git, so the IDE Actions must first be 
 | Number of Focused Resources  | At least One                                                                                                |
 | Object Type (Filter)         | UIPG; UIST                                                                                                  |
 
+### Consumption Model fields
+
+![Consumption Model](./img/image-07.png)
+
+| Object                       | Value                                                                                                       |
+|------------------------------|-------------------------------------------------------------------------------------------------------------|
+| Package                      | Z_MIA_ACTIONS                                                                                               |
+| IDE Action Name              | Z_MIA_CONSUMPTION                                                                                           |
+| Title                        | Consumption Model fields                                                                                    |
+| Summary                      | Fill the fields from the Consumption Model of a specific structure.                                         |
+| Implementing Class           | ZCL_MIA_CONSUMPTION_ACTION                                                                                  |
+| Input UI Configuration Class | ZCL_MIA_CONSUMPTION_INPUT                                                                                   |
+| Number of Focused Resources  | One                                                                                                         |
+| Object Type (Filter)         | DDLS                                                                                                        |
+
 ## Features
 
 Currently the following actions and features are included.
@@ -95,6 +110,35 @@ It takes various code snippets from the [GitHub](https://github.com/Xexer/abap-c
 ### Scope Launchpad
 
 Scope the Launchpad Content as Spaces and Pages that have been created with the ABAP Development Tools. More informations about scoping in this [article](https://software-heroes.com/en/blog/btp-pages-and-spaces-adt).
+
+### Consumption Model fields
+
+It takes a consumption model class that inherits from the superclass /IWBEP/CL_V4_ABS_PM_MODEL_PROV and provides the option to select the appropriate structure from the class. 
+
+![Code snippets](./img/image-08.png)
+
+So the type definition in the class is converted.
+
+```ABAP
+TYPES:
+  "! <p class="shorttext synchronized" lang="en">CompanyNamesType</p>
+  BEGIN OF tys_company_names_type,
+    "! <em>Key property</em> CompanyName
+    company_name        TYPE c LENGTH 60,
+    "! Branch
+    branch              TYPE c LENGTH 50,
+    "! CompanyDescription
+    company_description TYPE c LENGTH 255,
+  END OF tys_company_names_type.
+```
+
+Finally, the complete field mapping is written to the custom entity to establish integration.
+
+```ABAP 
+company_name : abap.char(60);
+branch : abap.char(50);
+company_description : abap.char(255);
+```
 
 ## Public Material
 
