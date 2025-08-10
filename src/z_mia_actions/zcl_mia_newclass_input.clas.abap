@@ -9,28 +9,28 @@ CLASS zcl_mia_newclass_input DEFINITION
       "! <p class="shorttext">Create new class</p>
       BEGIN OF input,
         "! $required
-        "! $maximum 30
+        "! $maxLength 30
         package     TYPE sxco_package,
         "! $required
-        "! $maximum 20
+        "! $maxLength 20
         transport   TYPE sxco_transport,
         "! $required
-        "! $maximum 10
+        "! $maxLength 10
         prefix      TYPE zif_mia_object_generator=>prefix,
         "! $required
-        "! $maximum 24
+        "! $maxLength 24
         name        TYPE sxco_ao_object_name,
         "! $required
-        "! $maximum 50
+        "! $maxLength 50
         description TYPE if_xco_cp_gen_intf_s_form=>tv_short_description,
         "! $required
-        "! $maximum 30
+        "! $maxLength 30
         class       TYPE sxco_ao_object_name,
-        "! $maximum 30
+        "! $maxLength 30
         interface   TYPE sxco_ao_object_name,
-        "! $maximum 30
+        "! $maxLength 30
         factory     TYPE sxco_ao_object_name,
-        "! $maximum 30
+        "! $maxLength 30
         injector    TYPE sxco_ao_object_name,
       END OF input.
 
