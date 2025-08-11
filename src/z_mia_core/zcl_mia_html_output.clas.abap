@@ -9,9 +9,28 @@ CLASS zcl_mia_html_output DEFINITION
   PRIVATE SECTION.
     DATA output TYPE string.
 
+    TYPES: BEGIN OF rap_output,
+             layer    TYPE string,
+             object   TYPE string,
+             behavior TYPE string,
+             metadata TYPE string,
+           END OF rap_output.
+    TYPES rap_outputs TYPE STANDARD TABLE OF rap_output WITH EMPTY KEY.
+
+    TYPES: BEGIN OF rap_hierarchy,
+             level  TYPE i,
+             object TYPE string,
+           END OF rap_hierarchy.
+    TYPES rap_hierarchies TYPE STANDARD TABLE OF rap_hierarchy WITH EMPTY KEY.
+
     "! Build HTML Header
     "! @parameter text | Text for Header
     METHODS generate_header
+      IMPORTING !text TYPE string.
+
+    "! Build HTML Text
+    "! @parameter text | Text
+    METHODS generate_text
       IMPORTING !text TYPE string.
 
     "! Create HTML Breaks
@@ -43,6 +62,11 @@ CLASS zcl_mia_html_output DEFINITION
     "! @parameter generation_result | Result from Run
     METHODS build_message_table
       IMPORTING generation_result TYPE zif_mia_object_generator=>generation_result.
+
+    METHODS build_rap_hierarchy
+      IMPORTING hierarchies   TYPE rap_hierarchies
+                object_type   TYPE string
+      RETURNING VALUE(result) TYPE string.
 ENDCLASS.
 
 
@@ -65,6 +89,118 @@ CLASS zcl_mia_html_output IMPLEMENTATION.
     generate_table( table ).
 
     RETURN finalize_document( ).
+  ENDMETHOD.
+
+
+  METHOD zif_mia_html_output~generate_rap_object.
+    DATA rap_output             TYPE rap_outputs.
+    DATA rap_hierarchy_objects  TYPE rap_hierarchies.
+    DATA rap_hierarchy_metadata TYPE rap_hierarchies.
+
+    CLEAR output.
+    DATA(link) = zcl_mia_core_factory=>create_object_link( ).
+
+    INSERT VALUE #( layer    = 'Layer'
+                    object   = 'Objects'
+                    behavior = 'Behavior'
+                    metadata = 'Metadata' )
+           INTO TABLE rap_output.
+
+    INSERT VALUE #( layer    = '<strong>Service Binding</strong>'
+                    object   = link->get_hmtl_link_for_object( object_type = link->supported_objects-service_binding
+                                                               object      = object-service_binding )
+                    behavior = ''
+                    metadata = '' )
+           INTO TABLE rap_output.
+
+    INSERT VALUE #( layer    = '<strong>Service Definition</strong>'
+                    object   = link->get_hmtl_link_for_object( object_type = link->supported_objects-service_definition
+                                                               object      = object-service_definition )
+                    behavior = ''
+                    metadata = '' )
+           INTO TABLE rap_output.
+
+    rap_hierarchy_objects = VALUE #( ( level = 1 object = object-consumption-cds_entity ) ).
+    LOOP AT object-consumption-childs INTO DATA(child).
+      INSERT VALUE #( level  = 2
+                      object = child-cds_entity ) INTO TABLE rap_hierarchy_objects.
+    ENDLOOP.
+
+    rap_hierarchy_metadata = VALUE #( ( level = 1 object = object-consumption-metadata ) ).
+    LOOP AT object-consumption-childs INTO child.
+      INSERT VALUE #( level  = 2
+                      object = child-metadata ) INTO TABLE rap_hierarchy_metadata.
+    ENDLOOP.
+
+    INSERT VALUE #( layer    = '<strong>Consumption</strong>'
+                    object   = build_rap_hierarchy( hierarchies = rap_hierarchy_objects
+                                                    object_type = zif_mia_object_link=>supported_objects-cds )
+                    behavior = link->get_hmtl_link_for_object( object_type = link->supported_objects-behavior
+                                                               object      = object-consumption-behavior )
+                    metadata = build_rap_hierarchy( hierarchies = rap_hierarchy_metadata
+                                                    object_type = zif_mia_object_link=>supported_objects-metadata ) )
+           INTO TABLE rap_output.
+
+    rap_hierarchy_objects = VALUE #( ( level = 1 object = object-base-cds_entity ) ).
+    LOOP AT object-base-childs INTO child.
+      INSERT VALUE #( level  = 2
+                      object = child-cds_entity ) INTO TABLE rap_hierarchy_objects.
+    ENDLOOP.
+
+    rap_hierarchy_metadata = VALUE #( ( level = 1 object = object-base-metadata ) ).
+    LOOP AT object-base-childs INTO child.
+      INSERT VALUE #( level  = 2
+                      object = child-metadata ) INTO TABLE rap_hierarchy_metadata.
+    ENDLOOP.
+
+    INSERT VALUE #( layer    = '<strong>Interface</strong>'
+                    object   = build_rap_hierarchy( hierarchies = rap_hierarchy_objects
+                                                    object_type = zif_mia_object_link=>supported_objects-cds )
+                    behavior = link->get_hmtl_link_for_object( object_type = link->supported_objects-behavior
+                                                               object      = object-base-behavior )
+                    metadata = build_rap_hierarchy( hierarchies = rap_hierarchy_metadata
+                                                    object_type = zif_mia_object_link=>supported_objects-metadata ) )
+           INTO TABLE rap_output.
+
+    rap_hierarchy_objects = VALUE #( ( level = 1 object = object-base-table ) ).
+    LOOP AT object-base-childs INTO child.
+      INSERT VALUE #( level  = 2
+                      object = child-table ) INTO TABLE rap_hierarchy_objects.
+    ENDLOOP.
+
+    INSERT VALUE #(
+        layer    = '<strong>Database</strong>'
+        object   = build_rap_hierarchy( hierarchies = rap_hierarchy_objects
+                                        object_type = zif_mia_object_link=>supported_objects-database_table )
+        behavior = ''
+        metadata = '' )
+           INTO TABLE rap_output.
+
+    generate_header( object-name ).
+    generate_text( object-classification ).
+    generate_table( REF #( rap_output ) ).
+
+    RETURN finalize_document( ).
+  ENDMETHOD.
+
+
+  METHOD build_rap_hierarchy.
+    DATA(link) = zcl_mia_core_factory=>create_object_link( ).
+
+    LOOP AT hierarchies INTO DATA(hierarchy) WHERE object IS NOT INITIAL.
+      DATA(object_link) = link->get_hmtl_link_for_object( object_type = object_type
+                                                          object      = hierarchy-object ).
+
+      IF result IS NOT INITIAL.
+        result &&= `<br>`.
+      ENDIF.
+
+      DO hierarchy-level - 1 TIMES.
+        result &&= '➥'.
+      ENDDO.
+      result &&= | { object_link }|.
+
+    ENDLOOP.
   ENDMETHOD.
 
 
@@ -146,7 +282,7 @@ CLASS zcl_mia_html_output IMPLEMENTATION.
 
 
   METHOD generate_header.
-    output &&= |<h3>{ text }</h3>|.
+    output &&= |<h1>{ text }</h1>|.
   ENDMETHOD.
 
 
@@ -175,7 +311,8 @@ CLASS zcl_mia_html_output IMPLEMENTATION.
 
   METHOD finalize_document.
     DATA(css) = `table { border-collapse: collapse; } `.
-    css &&= `td, th { padding: 5px 12px; } `.
+    css &&= `td, th { padding: 10px 17px; line-height: 2.0; } `.
+    css &&= |td, th \{ border: 1px solid grey; \} |.
     css &&= |th \{ background-color: black; color: white; \} |.
 
     RETURN |<!DOCTYPE html lang="en">| &
@@ -200,5 +337,10 @@ CLASS zcl_mia_html_output IMPLEMENTATION.
     ENDLOOP.
 
     generate_table( REF #( errors ) ).
+  ENDMETHOD.
+
+
+  METHOD generate_text.
+    output &&= |<p>{ text }</p>|.
   ENDMETHOD.
 ENDCLASS.

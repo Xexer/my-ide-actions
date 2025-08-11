@@ -28,4 +28,11 @@ INTERFACE zif_mia_html_output
   METHODS generate_generic_output
     IMPORTING !table        TYPE REF TO data
     RETURNING VALUE(result) TYPE string.
+
+  "! Generate overview for RAP object
+  "! @parameter object | Definition of RAP Object
+  "! @parameter result | HTML for Output
+  METHODS generate_rap_object
+    IMPORTING !object       TYPE zif_mia_rap_analyzer=>rap_object
+    RETURNING VALUE(result) TYPE string.
 ENDINTERFACE.
