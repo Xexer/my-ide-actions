@@ -16,6 +16,9 @@ CLASS zcl_mia_rap_analyzer DEFINITION
     "! Temp. stack for all objects
     DATA object_stack TYPE zif_mia_rap_analyzer=>entities.
 
+    "! Used entities for assembling
+    DATA used_entites TYPE string_table.
+
     "! Creates the RAP object from the object stack
     "! @parameter result | RAP Object
     METHODS assemble_object
@@ -84,6 +87,16 @@ CLASS zcl_mia_rap_analyzer DEFINITION
                 !parent TYPE string OPTIONAL
                 !alias  TYPE string OPTIONAL.
 
+    "! Add the nodes as hierarchy
+    "! @parameter actual_object | Actual node
+    "! @parameter childs        | Actual child nodes
+    METHODS add_hierarchy_level
+      IMPORTING actual_object TYPE string
+      CHANGING  childs        TYPE zif_mia_rap_analyzer=>rap_childs.
+
+    METHODS fill_parent_connection
+      IMPORTING rap_object    TYPE zif_mia_rap_analyzer=>rap_object
+      RETURNING VALUE(result) TYPE zif_mia_rap_analyzer=>rap_object.
 ENDCLASS.
 
 
@@ -304,6 +317,7 @@ CLASS zcl_mia_rap_analyzer IMPLEMENTATION.
 
 
   METHOD assemble_object.
+    CLEAR used_entites.
     DATA(position) = 0.
 
     LOOP AT object_stack INTO DATA(object) STEP -1 WHERE root = abap_true.
@@ -316,6 +330,7 @@ CLASS zcl_mia_rap_analyzer IMPLEMENTATION.
           EXIT.
       ENDCASE.
 
+      INSERT object-name INTO TABLE used_entites.
       rap_layer->cds_entity = object-name.
 
       TRY.
@@ -339,44 +354,13 @@ CLASS zcl_mia_rap_analyzer IMPLEMENTATION.
           CLEAR rap_layer->metadata.
       ENDTRY.
 
-      LOOP AT object_stack INTO DATA(child) WHERE type = zif_mia_rap_analyzer=>types-cds AND parent = object-name.
-        IF line_exists( result-base-childs[ cds_entity = child-name ] ) OR result-base-cds_entity = child-name.
-          CONTINUE.
-        ENDIF.
-
-        INSERT VALUE #( cds_entity = child-name ) INTO TABLE rap_layer->childs REFERENCE INTO DATA(rap_child).
-
-        TRY.
-            rap_child->table = object_stack[ type   = zif_mia_rap_analyzer=>types-table
-                                             parent = rap_child->cds_entity ]-database.
-          CATCH cx_sy_itab_line_not_found.
-            CLEAR rap_child->table.
-        ENDTRY.
-
-        TRY.
-            rap_child->metadata = object_stack[ type   = zif_mia_rap_analyzer=>types-metadata
-                                                parent = rap_child->cds_entity ]-name.
-          CATCH cx_sy_itab_line_not_found.
-            CLEAR rap_child->metadata.
-        ENDTRY.
-      ENDLOOP.
+      add_hierarchy_level( EXPORTING actual_object = object-name
+                           CHANGING  childs        = rap_layer->childs ).
 
       position += 1.
     ENDLOOP.
 
-    LOOP AT result-base-childs REFERENCE INTO DATA(child_node).
-      LOOP AT result-consumption-childs INTO DATA(consumption).
-        TRY.
-            child_node->parent = object_stack[ name   = child_node->cds_entity
-                                               type   = zif_mia_rap_analyzer=>types-cds
-                                               parent = consumption-cds_entity ]-parent.
-            EXIT.
-
-          CATCH cx_sy_itab_line_not_found.
-            CLEAR child_node->parent.
-        ENDTRY.
-      ENDLOOP.
-    ENDLOOP.
+    result = fill_parent_connection( result ).
 
     result-name            = result-base-behavior.
     result-classification  = zif_mia_rap_analyzer=>classifications-standard.
@@ -390,6 +374,52 @@ CLASS zcl_mia_rap_analyzer IMPLEMENTATION.
 
     LOOP AT object_stack INTO object WHERE type = zif_mia_rap_analyzer=>types-domain.
       INSERT object-name INTO TABLE result-domains.
+    ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD add_hierarchy_level.
+    LOOP AT object_stack INTO DATA(child) WHERE type = zif_mia_rap_analyzer=>types-cds AND parent = actual_object.
+      IF line_exists( used_entites[ table_line = child-name ] ).
+        CONTINUE.
+      ENDIF.
+
+      INSERT child-name INTO TABLE used_entites.
+      INSERT VALUE #( cds_entity   = child-name
+                      parent_child = actual_object ) INTO TABLE childs REFERENCE INTO DATA(rap_child).
+
+      TRY.
+          rap_child->table = object_stack[ type   = zif_mia_rap_analyzer=>types-table
+                                           parent = rap_child->cds_entity ]-database.
+        CATCH cx_sy_itab_line_not_found.
+          CLEAR rap_child->table.
+      ENDTRY.
+
+      TRY.
+          rap_child->metadata = object_stack[ type   = zif_mia_rap_analyzer=>types-metadata
+                                              parent = rap_child->cds_entity ]-name.
+        CATCH cx_sy_itab_line_not_found.
+          CLEAR rap_child->metadata.
+      ENDTRY.
+
+      add_hierarchy_level( EXPORTING actual_object = child-name
+                           CHANGING  childs        = childs ).
+    ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD fill_parent_connection.
+    result = rap_object.
+
+    LOOP AT result-base-childs REFERENCE INTO DATA(child_node).
+      LOOP AT result-consumption-childs INTO DATA(consumption).
+        DATA(cds) = xco_cp_cds=>view_entity( CONV #( consumption-cds_entity ) ).
+
+        IF cds->content( )->get_data_source( )-view_entity = child_node->cds_entity.
+          child_node->parent = consumption-cds_entity.
+          EXIT.
+        ENDIF.
+      ENDLOOP.
     ENDLOOP.
   ENDMETHOD.
 

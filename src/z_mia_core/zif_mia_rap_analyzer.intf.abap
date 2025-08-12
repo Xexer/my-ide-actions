@@ -18,10 +18,11 @@ INTERFACE zif_mia_rap_analyzer
 
   TYPES:
     BEGIN OF rap_child,
-      cds_entity TYPE string,
-      table      TYPE string,
-      metadata   TYPE string,
-      parent     TYPE string,
+      cds_entity   TYPE string,
+      table        TYPE string,
+      metadata     TYPE string,
+      parent       TYPE string,
+      parent_child TYPE string,
     END OF rap_child.
   TYPES rap_childs TYPE STANDARD TABLE OF rap_child WITH EMPTY KEY.
 

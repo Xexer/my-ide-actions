@@ -7,6 +7,8 @@ CLASS zcl_mia_html_output DEFINITION
     INTERFACES zif_mia_html_output.
 
   PRIVATE SECTION.
+    CONSTANTS depth_level_sign TYPE string VALUE '➥'.
+
     DATA output TYPE string.
 
     TYPES: BEGIN OF rap_output,
@@ -63,10 +65,36 @@ CLASS zcl_mia_html_output DEFINITION
     METHODS build_message_table
       IMPORTING generation_result TYPE zif_mia_object_generator=>generation_result.
 
+    "! Build node hierarchy for HTML output
+    "! @parameter hierarchies | Hierarchies
+    "! @parameter object_type | Type of object
+    "! @parameter result      | HTML output
     METHODS build_rap_hierarchy
       IMPORTING hierarchies   TYPE rap_hierarchies
                 object_type   TYPE string
       RETURNING VALUE(result) TYPE string.
+
+    "! Build index table in real order
+    "! @parameter field  | Name of the field
+    "! @parameter layer  | Actual layer
+    "! @parameter result | Index table
+    METHODS build_hierarchy_index_table
+      IMPORTING !field        TYPE string
+                layer         TYPE zif_mia_rap_analyzer=>rap_layer
+      RETURNING VALUE(result) TYPE rap_hierarchies.
+
+    "! Build index table one layer deeper
+    "! @parameter depth         | Index for depth
+    "! @parameter actual_entity | Actual RAP node
+    "! @parameter field         | Name of the field
+    "! @parameter layer         | Actual layer
+    "! @parameter result        | Index table
+    METHODS build_index_layer
+      IMPORTING !depth        TYPE i
+                actual_entity TYPE string
+                !field        TYPE string
+                layer         TYPE zif_mia_rap_analyzer=>rap_layer
+      CHANGING  !result       TYPE zcl_mia_html_output=>rap_hierarchies.
 ENDCLASS.
 
 
@@ -120,17 +148,11 @@ CLASS zcl_mia_html_output IMPLEMENTATION.
                     metadata = '' )
            INTO TABLE rap_output.
 
-    rap_hierarchy_objects = VALUE #( ( level = 1 object = object-consumption-cds_entity ) ).
-    LOOP AT object-consumption-childs INTO DATA(child).
-      INSERT VALUE #( level  = 2
-                      object = child-cds_entity ) INTO TABLE rap_hierarchy_objects.
-    ENDLOOP.
+    rap_hierarchy_objects = build_hierarchy_index_table( field = `CDS_ENTITY`
+                                                         layer = object-consumption ).
 
-    rap_hierarchy_metadata = VALUE #( ( level = 1 object = object-consumption-metadata ) ).
-    LOOP AT object-consumption-childs INTO child.
-      INSERT VALUE #( level  = 2
-                      object = child-metadata ) INTO TABLE rap_hierarchy_metadata.
-    ENDLOOP.
+    rap_hierarchy_metadata = build_hierarchy_index_table( field = `METADATA`
+                                                          layer = object-consumption ).
 
     INSERT VALUE #( layer    = '<strong>Consumption</strong>'
                     object   = build_rap_hierarchy( hierarchies = rap_hierarchy_objects
@@ -141,17 +163,11 @@ CLASS zcl_mia_html_output IMPLEMENTATION.
                                                     object_type = zif_mia_object_link=>supported_objects-metadata ) )
            INTO TABLE rap_output.
 
-    rap_hierarchy_objects = VALUE #( ( level = 1 object = object-base-cds_entity ) ).
-    LOOP AT object-base-childs INTO child.
-      INSERT VALUE #( level  = 2
-                      object = child-cds_entity ) INTO TABLE rap_hierarchy_objects.
-    ENDLOOP.
+    rap_hierarchy_objects = build_hierarchy_index_table( field = `CDS_ENTITY`
+                                                         layer = object-base ).
 
-    rap_hierarchy_metadata = VALUE #( ( level = 1 object = object-base-metadata ) ).
-    LOOP AT object-base-childs INTO child.
-      INSERT VALUE #( level  = 2
-                      object = child-metadata ) INTO TABLE rap_hierarchy_metadata.
-    ENDLOOP.
+    rap_hierarchy_metadata = build_hierarchy_index_table( field = `METADATA`
+                                                          layer = object-base ).
 
     INSERT VALUE #( layer    = '<strong>Interface</strong>'
                     object   = build_rap_hierarchy( hierarchies = rap_hierarchy_objects
@@ -162,11 +178,8 @@ CLASS zcl_mia_html_output IMPLEMENTATION.
                                                     object_type = zif_mia_object_link=>supported_objects-metadata ) )
            INTO TABLE rap_output.
 
-    rap_hierarchy_objects = VALUE #( ( level = 1 object = object-base-table ) ).
-    LOOP AT object-base-childs INTO child.
-      INSERT VALUE #( level  = 2
-                      object = child-table ) INTO TABLE rap_hierarchy_objects.
-    ENDLOOP.
+    rap_hierarchy_objects = build_hierarchy_index_table( field = `TABLE`
+                                                         layer = object-base ).
 
     INSERT VALUE #(
         layer    = '<strong>Database</strong>'
@@ -200,6 +213,34 @@ CLASS zcl_mia_html_output IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD build_hierarchy_index_table.
+    ASSIGN COMPONENT field OF STRUCTURE layer TO FIELD-SYMBOL(<content>).
+    INSERT VALUE #( level  = 1
+                    object = <content> ) INTO TABLE result.
+
+    build_index_layer( EXPORTING depth         = 2
+                                 actual_entity = layer-cds_entity
+                                 field         = field
+                                 layer         = layer
+                       CHANGING  result        = result ).
+  ENDMETHOD.
+
+
+  METHOD build_index_layer.
+    LOOP AT layer-childs INTO DATA(child) WHERE parent_child = actual_entity.
+      ASSIGN COMPONENT field OF STRUCTURE child TO FIELD-SYMBOL(<content>).
+      INSERT VALUE #( level  = depth
+                      object = <content> ) INTO TABLE result.
+
+      build_index_layer( EXPORTING depth         = depth + 1
+                                   actual_entity = child-cds_entity
+                                   field         = field
+                                   layer         = layer
+                         CHANGING  result        = result ).
+    ENDLOOP.
+  ENDMETHOD.
+
+
   METHOD build_rap_hierarchy.
     DATA(link) = zcl_mia_core_factory=>create_object_link( ).
 
@@ -212,10 +253,9 @@ CLASS zcl_mia_html_output IMPLEMENTATION.
       ENDIF.
 
       DO hierarchy-level - 1 TIMES.
-        result &&= '➥'.
+        result &&= depth_level_sign.
       ENDDO.
       result &&= | { object_link }|.
-
     ENDLOOP.
   ENDMETHOD.
 
