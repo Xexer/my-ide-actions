@@ -10,6 +10,7 @@ INTERFACE zif_mia_object_link
                behavior           TYPE string VALUE `BEHV`,
                database_table     TYPE string VALUE `TABL`,
                cds                TYPE string VALUE `DDL`,
+               domain             TYPE string VALUE `DOMA`,
              END OF supported_objects.
 
   "! Build HTML link for object
@@ -74,6 +75,13 @@ INTERFACE zif_mia_object_link
   "! @parameter object | Name of the object
   "! @parameter result | ADT link
   METHODS get_adt_for_cds
+    IMPORTING !object       TYPE csequence
+    RETURNING VALUE(result) TYPE string.
+
+  "! Build ADT link for domain
+  "! @parameter object | Name of the object
+  "! @parameter result | ADT link
+  METHODS get_adt_for_domain
     IMPORTING !object       TYPE csequence
     RETURNING VALUE(result) TYPE string.
 ENDINTERFACE.

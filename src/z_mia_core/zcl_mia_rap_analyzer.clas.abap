@@ -74,6 +74,16 @@ CLASS zcl_mia_rap_analyzer DEFINITION
       IMPORTING !name   TYPE string
                 !parent TYPE string OPTIONAL
                 !alias  TYPE string OPTIONAL.
+
+    "! Analyze the table object
+    "! @parameter name   | Name of the object
+    "! @parameter parent | Parent of the object
+    "! @parameter alias  | Alias for the object
+    METHODS analyze_domain
+      IMPORTING !name   TYPE string
+                !parent TYPE string OPTIONAL
+                !alias  TYPE string OPTIONAL.
+
 ENDCLASS.
 
 
@@ -243,7 +253,18 @@ CLASS zcl_mia_rap_analyzer IMPLEMENTATION.
     entry->database    = to_upper( name ).
     entry->description = content->get_short_description( ).
 
-    entry->loaded      = abap_true.
+    LOOP AT table->fields->all->get( ) INTO DATA(field).
+      TRY.
+          DATA(domain) = field->content( )->get_type( )->get_data_element( )->content( )->get_data_type( )->get_domain( ).
+          analyze_domain( name   = CONV #( domain->name )
+                          parent = name ).
+
+        CATCH cx_sy_ref_is_initial.
+          CONTINUE.
+      ENDTRY.
+    ENDLOOP.
+
+    entry->loaded = abap_true.
   ENDMETHOD.
 
 
@@ -357,9 +378,45 @@ CLASS zcl_mia_rap_analyzer IMPLEMENTATION.
       ENDLOOP.
     ENDLOOP.
 
-    result-name               = result-base-behavior.
-    result-classification     = zif_mia_rap_analyzer=>classifications-standard.
-    result-service_definition = object_stack[ type = zif_mia_rap_analyzer=>types-service_definition ]-name.
-    result-service_binding    = object_stack[ type = zif_mia_rap_analyzer=>types-service_binding ]-name.
+    result-name            = result-base-behavior.
+    result-classification  = zif_mia_rap_analyzer=>classifications-standard.
+    result-service_binding = object_stack[ type = zif_mia_rap_analyzer=>types-service_binding ]-name.
+
+    TRY.
+        result-service_definition = object_stack[ type = zif_mia_rap_analyzer=>types-service_definition ]-name.
+      CATCH cx_sy_itab_line_not_found.
+        CLEAR result-service_definition.
+    ENDTRY.
+
+    LOOP AT object_stack INTO object WHERE type = zif_mia_rap_analyzer=>types-domain.
+      INSERT object-name INTO TABLE result-domains.
+    ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD analyze_domain.
+    IF name IS INITIAL.
+      RETURN.
+    ENDIF.
+
+    DATA(domain) = xco_cp_abap_dictionary=>domain( CONV #( name ) ).
+    IF NOT domain->exists( ).
+      RETURN.
+    ENDIF.
+
+    IF domain->fixed_values->all->get( ) IS INITIAL.
+      RETURN.
+    ENDIF.
+
+    CASE name.
+      WHEN 'ABAP_BOOLEAN'.
+        RETURN.
+    ENDCASE.
+
+    INSERT VALUE #( name   = name
+                    type   = zif_mia_rap_analyzer=>types-domain
+                    alias  = alias
+                    parent = to_upper( parent )
+                    loaded = abap_true ) INTO TABLE object_stack.
   ENDMETHOD.
 ENDCLASS.

@@ -42,6 +42,7 @@ INTERFACE zif_mia_rap_analyzer
       consumption        TYPE rap_layer,
       service_definition TYPE string,
       service_binding    TYPE string,
+      domains            TYPE string_table,
     END OF rap_object.
 
   CONSTANTS:
@@ -52,6 +53,7 @@ INTERFACE zif_mia_rap_analyzer
       behavior           TYPE string VALUE `BEHAVIOR`,
       cds                TYPE string VALUE `CDS`,
       table              TYPE string VALUE `TABLE`,
+      domain             TYPE string VALUE `DOMAIN`,
     END OF types.
 
   CONSTANTS:

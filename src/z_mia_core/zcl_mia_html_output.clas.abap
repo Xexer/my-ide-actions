@@ -176,6 +176,22 @@ CLASS zcl_mia_html_output IMPLEMENTATION.
         metadata = '' )
            INTO TABLE rap_output.
 
+    DATA(domains) = ``.
+    LOOP AT object-domains INTO DATA(domain).
+      IF domains IS NOT INITIAL.
+        domains &&= `<br>`.
+      ENDIF.
+
+      domains &&= link->get_hmtl_link_for_object( object_type = link->supported_objects-domain
+                                                  object      = domain ).
+    ENDLOOP.
+
+    INSERT VALUE #( layer    = '<strong>Domain</strong>'
+                    object   = domains
+                    behavior = ''
+                    metadata = '' )
+           INTO TABLE rap_output.
+
     generate_header( object-name ).
     generate_text( object-classification ).
     generate_table( REF #( rap_output ) ).
