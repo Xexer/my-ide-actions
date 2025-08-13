@@ -48,6 +48,7 @@ INTERFACE zif_mia_rap_analyzer
 
   CONSTANTS:
     BEGIN OF types,
+      configuration      TYPE string VALUE `CONFIGURATION`,
       service_binding    TYPE string VALUE `SERVICE_BINDING`,
       service_definition TYPE string VALUE `SERVICE_DEFINITION`,
       metadata           TYPE string VALUE `METADATA_EXTENSION`,

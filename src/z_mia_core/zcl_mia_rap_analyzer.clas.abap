@@ -94,6 +94,9 @@ CLASS zcl_mia_rap_analyzer DEFINITION
       IMPORTING actual_object TYPE string
       CHANGING  childs        TYPE zif_mia_rap_analyzer=>rap_childs.
 
+    "! Fill the parent field in BASE layer
+    "! @parameter rap_object | Actual RAP object
+    "! @parameter result     | New values
     METHODS fill_parent_connection
       IMPORTING rap_object    TYPE zif_mia_rap_analyzer=>rap_object
       RETURNING VALUE(result) TYPE zif_mia_rap_analyzer=>rap_object.
@@ -107,7 +110,7 @@ CLASS zcl_mia_rap_analyzer IMPLEMENTATION.
 
 
   METHOD zif_mia_rap_analyzer~get_objects_in_stack.
-    CLEAR object_stack.
+    object_stack = VALUE #( ( type = zif_mia_rap_analyzer=>types-configuration ) ).
     analyze_service_binding( service_name ).
 
     DELETE object_stack WHERE not_found = abap_true.
@@ -179,7 +182,14 @@ CLASS zcl_mia_rap_analyzer IMPLEMENTATION.
     entry->description = content->get_short_description( ).
 
     LOOP AT service_definition->exposures->all->get( ) INTO DATA(exposure).
-      IF exposure->content( )->get_cds_entity( )->get_data_definition( )->view_entity( )->content( )->get_root_indicator( ) = abap_false.
+      DATA(definition) = exposure->content( )->get_cds_entity( )->get_data_definition( ).
+      DATA(configuration) = REF #( object_stack[ type = zif_mia_rap_analyzer=>types-configuration ] ).
+
+      IF definition->view_entity( )->content( )->get_root_indicator( ) = abap_true.
+        configuration->description = zif_mia_rap_analyzer=>classifications-standard.
+      ELSEIF definition->custom_entity( )->content( )->get_root_indicator( ) = abap_true.
+        configuration->description = zif_mia_rap_analyzer=>classifications-custom.
+      ELSE.
         CONTINUE.
       ENDIF.
 
@@ -362,8 +372,9 @@ CLASS zcl_mia_rap_analyzer IMPLEMENTATION.
 
     result = fill_parent_connection( result ).
 
+    DATA(configuration) = REF #( object_stack[ type = zif_mia_rap_analyzer=>types-configuration ] ).
     result-name            = result-base-behavior.
-    result-classification  = zif_mia_rap_analyzer=>classifications-standard.
+    result-classification  = configuration->description.
     result-service_binding = object_stack[ type = zif_mia_rap_analyzer=>types-service_binding ]-name.
 
     TRY.
