@@ -3,9 +3,9 @@
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
    <VSEOCLASS>
-    <CLSNAME>ZCL_MIA_CONSUMPTION_VALUE</CLSNAME>
+    <CLSNAME>ZCL_MIA_NEW_CLASS_VALUE</CLSNAME>
     <LANGU>E</LANGU>
-    <DESCRIPT>MIA: Consumption Model Value Help</DESCRIPT>
+    <DESCRIPT>MIA: Value Help for New Class</DESCRIPT>
     <STATE>1</STATE>
     <CLSCCINCL>X</CLSCCINCL>
     <FIXPT>X</FIXPT>

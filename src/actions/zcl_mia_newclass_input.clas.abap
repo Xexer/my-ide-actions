@@ -86,6 +86,11 @@ CLASS zcl_mia_newclass_input IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD if_aia_sd_action_input~get_value_help_provider.
+    result = cl_sd_value_help_provider=>create( NEW zcl_mia_new_class_value( ) ).
+  ENDMETHOD.
+
+
   METHOD get_transport_for_object.
     TRY.
         RETURN xco_cp_abap_repository=>package->for( input-package )->if_xco_cts_changeable~get_object( )->get_lock( )->get_transport( ).
