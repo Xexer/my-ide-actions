@@ -64,6 +64,12 @@ INTERFACE zif_mia_rap_analyzer
       custom   TYPE string VALUE `CUSTOM`,
     END OF classifications.
 
+  CONSTANTS:
+    BEGIN OF start_object,
+      service_binding    TYPE string VALUE `SRVB/SVB`,
+      service_definition TYPE string VALUE `SRVD/SRV`,
+    END OF start_object.
+
   "! Checks the service and returns all objects bellow
   "! @parameter result | List of objects
   METHODS get_objects_in_stack

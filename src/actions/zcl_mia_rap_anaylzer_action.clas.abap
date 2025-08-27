@@ -11,7 +11,8 @@ ENDCLASS.
 CLASS zcl_mia_rap_anaylzer_action IMPLEMENTATION.
   METHOD if_aia_action~run.
     DATA(resource) = context->get_focused_resource( ).
-    DATA(analyzer) = zcl_mia_core_factory=>create_rap_analyzer( resource->get_name( ) ).
+    DATA(analyzer) = zcl_mia_core_factory=>create_rap_analyzer( object_name = resource->get_name( )
+                                                                object_type = resource->get_type( ) ).
 
     DATA(rap_object) = analyzer->get_rap_object( ).
     DATA(html_content) = zcl_mia_core_factory=>create_html_output( )->generate_rap_object( rap_object ).

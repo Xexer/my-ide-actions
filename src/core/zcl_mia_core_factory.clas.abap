@@ -9,10 +9,12 @@ CLASS zcl_mia_core_factory DEFINITION
       RETURNING VALUE(result) TYPE REF TO zif_mia_object_generator.
 
     "! Generate RAP Analyzer Tool
-    "! @parameter service_name | Name of the Service
-    "! @parameter result       | RAP Analyzer
+    "! @parameter object_name | Name of the object
+    "! @parameter object_type | Type of the object
+    "! @parameter result      | RAP Analyzer
     CLASS-METHODS create_rap_analyzer
-      IMPORTING service_name  TYPE string
+      IMPORTING object_name   TYPE string
+                object_type   TYPE string
       RETURNING VALUE(result) TYPE REF TO zif_mia_rap_analyzer.
 
     "! Generate Name Generator
@@ -86,6 +88,7 @@ CLASS zcl_mia_core_factory IMPLEMENTATION.
 
 
   METHOD create_rap_analyzer.
-    RETURN NEW zcl_mia_rap_analyzer( service_name ).
+    RETURN NEW zcl_mia_rap_analyzer( object_name = object_name
+                                     object_type = object_type ).
   ENDMETHOD.
 ENDCLASS.

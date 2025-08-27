@@ -205,8 +205,12 @@ CLASS zcl_mia_html_output IMPLEMENTATION.
                     metadata = '' )
            INTO TABLE rap_output.
 
+    DATA(rap_pattern) = SWITCH #( object-classification
+                                  WHEN zif_mia_rap_analyzer=>classifications-standard THEN `Classic Pattern`
+                                  WHEN zif_mia_rap_analyzer=>classifications-custom   THEN `Custom Pattern` ).
+
     generate_header( object-name ).
-    generate_text( object-classification ).
+    generate_text( rap_pattern ).
     generate_table( REF #( rap_output ) ).
 
     RETURN finalize_document( ).

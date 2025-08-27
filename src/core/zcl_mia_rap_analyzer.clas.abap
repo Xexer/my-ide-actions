@@ -7,11 +7,15 @@ CLASS zcl_mia_rap_analyzer DEFINITION
     INTERFACES zif_mia_rap_analyzer.
 
     METHODS constructor
-      IMPORTING service_name TYPE string.
+      IMPORTING object_name TYPE string
+                object_type TYPE string.
 
   PRIVATE SECTION.
-    "! Name of the service binding
-    DATA service_name TYPE string.
+    "! Name of the Object
+    DATA object_name  TYPE string.
+
+    "! Type of the object
+    DATA object_type  TYPE string.
 
     "! Temp. stack for all objects
     DATA object_stack TYPE zif_mia_rap_analyzer=>entities.
@@ -42,11 +46,20 @@ CLASS zcl_mia_rap_analyzer DEFINITION
                 !parent TYPE string OPTIONAL
                 !alias  TYPE string OPTIONAL.
 
-    "! Analyze the Core Data Service object
+    "! Analyze the Core Data Service object (view entity)
     "! @parameter name   | Name of the object
     "! @parameter parent | Parent of the object
     "! @parameter alias  | Alias for the object
-    METHODS analyze_cds
+    METHODS analyze_cds_view
+      IMPORTING !name   TYPE string
+                !parent TYPE string OPTIONAL
+                !alias  TYPE string OPTIONAL.
+
+    "! Analyze the Core Data Service object (custom entity)
+    "! @parameter name   | Name of the object
+    "! @parameter parent | Parent of the object
+    "! @parameter alias  | Alias for the object
+    METHODS analyze_cds_custom
       IMPORTING !name   TYPE string
                 !parent TYPE string OPTIONAL
                 !alias  TYPE string OPTIONAL.
@@ -100,18 +113,30 @@ CLASS zcl_mia_rap_analyzer DEFINITION
     METHODS fill_parent_connection
       IMPORTING rap_object    TYPE zif_mia_rap_analyzer=>rap_object
       RETURNING VALUE(result) TYPE zif_mia_rap_analyzer=>rap_object.
+
+    "! Return classification for the actual stack
+    "! @parameter result | Classification
+    METHODS get_model_classification
+      RETURNING VALUE(result) TYPE string.
 ENDCLASS.
 
 
 CLASS zcl_mia_rap_analyzer IMPLEMENTATION.
   METHOD constructor.
-    me->service_name = service_name.
+    me->object_name = object_name.
+    me->object_type = object_type.
   ENDMETHOD.
 
 
   METHOD zif_mia_rap_analyzer~get_objects_in_stack.
     object_stack = VALUE #( ( type = zif_mia_rap_analyzer=>types-configuration ) ).
-    analyze_service_binding( service_name ).
+
+    CASE object_type.
+      WHEN zif_mia_rap_analyzer=>start_object-service_binding.
+        analyze_service_binding( object_name ).
+      WHEN zif_mia_rap_analyzer=>start_object-service_definition.
+        analyze_service_definition( object_name ).
+    ENDCASE.
 
     DELETE object_stack WHERE not_found = abap_true.
 
@@ -187,22 +212,25 @@ CLASS zcl_mia_rap_analyzer IMPLEMENTATION.
 
       IF definition->view_entity( )->content( )->get_root_indicator( ) = abap_true.
         configuration->description = zif_mia_rap_analyzer=>classifications-standard.
+        analyze_cds_view( name   = CONV #( exposure->cds_entity )
+                          parent = name
+                          alias  = exposure->content( )->get_alias( ) ).
+
       ELSEIF definition->custom_entity( )->content( )->get_root_indicator( ) = abap_true.
         configuration->description = zif_mia_rap_analyzer=>classifications-custom.
-      ELSE.
-        CONTINUE.
+        analyze_cds_custom( name   = CONV #( exposure->cds_entity )
+                            parent = name
+                            alias  = exposure->content( )->get_alias( ) ).
+
       ENDIF.
 
-      analyze_cds( name   = CONV #( exposure->cds_entity )
-                   parent = name
-                   alias  = exposure->content( )->get_alias( ) ).
     ENDLOOP.
 
     entry->loaded = abap_true.
   ENDMETHOD.
 
 
-  METHOD analyze_cds.
+  METHOD analyze_cds_view.
     IF name IS INITIAL.
       RETURN.
     ENDIF.
@@ -234,18 +262,66 @@ CLASS zcl_mia_rap_analyzer IMPLEMENTATION.
     entry->alias = source-alias.
 
     IF source-view_entity IS NOT INITIAL.
-      analyze_cds( name   = CONV #( source-view_entity )
-                   parent = entry->name ).
+      analyze_cds_view( name   = CONV #( source-view_entity )
+                        parent = entry->name ).
     ENDIF.
 
     LOOP AT cds->compositions->all->get( ) INTO DATA(composition).
-      analyze_cds( name   = CONV #( composition->target )
-                   parent = name
-                   alias  = composition->content( )->get_alias( ) ).
+      analyze_cds_view( name   = CONV #( composition->target )
+                        parent = name
+                        alias  = composition->content( )->get_alias( ) ).
     ENDLOOP.
 
     analyze_metadata( name   = entry->name
                       parent = entry->name ).
+
+    IF entry->root = abap_true.
+      analyze_behavior( name   = entry->name
+                        parent = entry->name ).
+    ENDIF.
+
+    entry->loaded = abap_true.
+  ENDMETHOD.
+
+
+  METHOD analyze_cds_custom.
+    IF name IS INITIAL.
+      RETURN.
+    ENDIF.
+
+    INSERT VALUE #( name   = name
+                    type   = zif_mia_rap_analyzer=>types-cds
+                    alias  = alias
+                    parent = parent ) INTO TABLE object_stack REFERENCE INTO DATA(entry).
+
+    DATA(cds) = xco_cp_cds=>custom_entity( CONV #( name ) ).
+    IF NOT cds->exists( ).
+      entry->not_found = abap_true.
+      RETURN.
+    ENDIF.
+
+    DATA(content) = cds->content( ).
+    entry->description = content->get_short_description( ).
+    entry->root        = content->get_root_indicator( ).
+
+    LOOP AT cds->fields->all->get( ) INTO DATA(field).
+      TRY.
+          DATA(domain) = field->content( )->get_type( )->get_data_element( )->content( )->get_data_type( )->get_domain( ).
+          IF domain IS NOT INITIAL.
+            analyze_domain( name   = CONV #( domain->name )
+                            parent = name ).
+          ENDIF.
+
+        CATCH cx_sy_ref_is_initial.
+      ENDTRY.
+
+      DATA(composition) = field->content( )->get_composition( ).
+      IF composition-target IS NOT INITIAL.
+        analyze_cds_custom( name   = CONV #( composition-target )
+                            parent = name
+                            alias  = CONV #( field->name ) ).
+      ENDIF.
+    ENDLOOP.
 
     IF entry->root = abap_true.
       analyze_behavior( name   = entry->name
@@ -373,9 +449,14 @@ CLASS zcl_mia_rap_analyzer IMPLEMENTATION.
     result = fill_parent_connection( result ).
 
     DATA(configuration) = REF #( object_stack[ type = zif_mia_rap_analyzer=>types-configuration ] ).
-    result-name            = result-base-behavior.
-    result-classification  = configuration->description.
-    result-service_binding = object_stack[ type = zif_mia_rap_analyzer=>types-service_binding ]-name.
+    result-name           = result-base-behavior.
+    result-classification = configuration->description.
+
+    TRY.
+        result-service_binding = object_stack[ type = zif_mia_rap_analyzer=>types-service_binding ]-name.
+      CATCH cx_sy_itab_line_not_found.
+        CLEAR result-service_binding.
+    ENDTRY.
 
     TRY.
         result-service_definition = object_stack[ type = zif_mia_rap_analyzer=>types-service_definition ]-name.
@@ -459,5 +540,10 @@ CLASS zcl_mia_rap_analyzer IMPLEMENTATION.
                     alias  = alias
                     parent = to_upper( parent )
                     loaded = abap_true ) INTO TABLE object_stack.
+  ENDMETHOD.
+
+
+  METHOD get_model_classification.
+    RETURN object_stack[ type = zif_mia_rap_analyzer=>types-configuration ]-description.
   ENDMETHOD.
 ENDCLASS.
