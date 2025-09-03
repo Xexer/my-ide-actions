@@ -7,23 +7,7 @@ CLASS zcl_mia_html_output DEFINITION
     INTERFACES zif_mia_html_output.
 
   PRIVATE SECTION.
-    CONSTANTS depth_level_sign TYPE string VALUE '➥'.
-
     DATA output TYPE string.
-
-    TYPES: BEGIN OF rap_output,
-             layer    TYPE string,
-             object   TYPE string,
-             behavior TYPE string,
-             metadata TYPE string,
-           END OF rap_output.
-    TYPES rap_outputs TYPE STANDARD TABLE OF rap_output WITH EMPTY KEY.
-
-    TYPES: BEGIN OF rap_hierarchy,
-             level  TYPE i,
-             object TYPE string,
-           END OF rap_hierarchy.
-    TYPES rap_hierarchies TYPE STANDARD TABLE OF rap_hierarchy WITH EMPTY KEY.
 
     "! Build HTML Header
     "! @parameter text | Text for Header
@@ -65,36 +49,6 @@ CLASS zcl_mia_html_output DEFINITION
     METHODS build_message_table
       IMPORTING generation_result TYPE zif_mia_object_generator=>generation_result.
 
-    "! Build node hierarchy for HTML output
-    "! @parameter hierarchies | Hierarchies
-    "! @parameter object_type | Type of object
-    "! @parameter result      | HTML output
-    METHODS build_rap_hierarchy
-      IMPORTING hierarchies   TYPE rap_hierarchies
-                object_type   TYPE string
-      RETURNING VALUE(result) TYPE string.
-
-    "! Build index table in real order
-    "! @parameter field  | Name of the field
-    "! @parameter layer  | Actual layer
-    "! @parameter result | Index table
-    METHODS build_hierarchy_index_table
-      IMPORTING !field        TYPE string
-                layer         TYPE zif_mia_rap_analyzer=>rap_layer
-      RETURNING VALUE(result) TYPE rap_hierarchies.
-
-    "! Build index table one layer deeper
-    "! @parameter depth         | Index for depth
-    "! @parameter actual_entity | Actual RAP node
-    "! @parameter field         | Name of the field
-    "! @parameter layer         | Actual layer
-    "! @parameter result        | Index table
-    METHODS build_index_layer
-      IMPORTING !depth        TYPE i
-                actual_entity TYPE string
-                !field        TYPE string
-                layer         TYPE zif_mia_rap_analyzer=>rap_layer
-      CHANGING  !result       TYPE zcl_mia_html_output=>rap_hierarchies.
 ENDCLASS.
 
 
@@ -121,146 +75,13 @@ CLASS zcl_mia_html_output IMPLEMENTATION.
 
 
   METHOD zif_mia_html_output~generate_rap_object.
-    DATA rap_output             TYPE rap_outputs.
-    DATA rap_hierarchy_objects  TYPE rap_hierarchies.
-    DATA rap_hierarchy_metadata TYPE rap_hierarchies.
-
-    CLEAR output.
-    DATA(link) = zcl_mia_core_factory=>create_object_link( ).
-
-    INSERT VALUE #( layer    = 'Layer'
-                    object   = 'Objects'
-                    behavior = 'Behavior'
-                    metadata = 'Metadata' )
-           INTO TABLE rap_output.
-
-    INSERT VALUE #( layer    = '<strong>Service Binding</strong>'
-                    object   = link->get_hmtl_link_for_object( object_type = link->supported_objects-service_binding
-                                                               object      = object-service_binding )
-                    behavior = ''
-                    metadata = '' )
-           INTO TABLE rap_output.
-
-    INSERT VALUE #( layer    = '<strong>Service Definition</strong>'
-                    object   = link->get_hmtl_link_for_object( object_type = link->supported_objects-service_definition
-                                                               object      = object-service_definition )
-                    behavior = ''
-                    metadata = '' )
-           INTO TABLE rap_output.
-
-    rap_hierarchy_objects = build_hierarchy_index_table( field = `CDS_ENTITY`
-                                                         layer = object-consumption ).
-
-    rap_hierarchy_metadata = build_hierarchy_index_table( field = `METADATA`
-                                                          layer = object-consumption ).
-
-    INSERT VALUE #( layer    = '<strong>Consumption</strong>'
-                    object   = build_rap_hierarchy( hierarchies = rap_hierarchy_objects
-                                                    object_type = zif_mia_object_link=>supported_objects-cds )
-                    behavior = link->get_hmtl_link_for_object( object_type = link->supported_objects-behavior
-                                                               object      = object-consumption-behavior )
-                    metadata = build_rap_hierarchy( hierarchies = rap_hierarchy_metadata
-                                                    object_type = zif_mia_object_link=>supported_objects-metadata ) )
-           INTO TABLE rap_output.
-
-    rap_hierarchy_objects = build_hierarchy_index_table( field = `CDS_ENTITY`
-                                                         layer = object-base ).
-
-    rap_hierarchy_metadata = build_hierarchy_index_table( field = `METADATA`
-                                                          layer = object-base ).
-
-    INSERT VALUE #( layer    = '<strong>Interface</strong>'
-                    object   = build_rap_hierarchy( hierarchies = rap_hierarchy_objects
-                                                    object_type = zif_mia_object_link=>supported_objects-cds )
-                    behavior = link->get_hmtl_link_for_object( object_type = link->supported_objects-behavior
-                                                               object      = object-base-behavior )
-                    metadata = build_rap_hierarchy( hierarchies = rap_hierarchy_metadata
-                                                    object_type = zif_mia_object_link=>supported_objects-metadata ) )
-           INTO TABLE rap_output.
-
-    rap_hierarchy_objects = build_hierarchy_index_table( field = `TABLE`
-                                                         layer = object-base ).
-
-    INSERT VALUE #(
-        layer    = '<strong>Database</strong>'
-        object   = build_rap_hierarchy( hierarchies = rap_hierarchy_objects
-                                        object_type = zif_mia_object_link=>supported_objects-database_table )
-        behavior = ''
-        metadata = '' )
-           INTO TABLE rap_output.
-
-    DATA(domains) = ``.
-    LOOP AT object-domains INTO DATA(domain).
-      IF domains IS NOT INITIAL.
-        domains &&= `<br>`.
-      ENDIF.
-
-      domains &&= link->get_hmtl_link_for_object( object_type = link->supported_objects-domain
-                                                  object      = domain ).
-    ENDLOOP.
-
-    INSERT VALUE #( layer    = '<strong>Domain</strong>'
-                    object   = domains
-                    behavior = ''
-                    metadata = '' )
-           INTO TABLE rap_output.
-
-    DATA(rap_pattern) = SWITCH #( object-classification
-                                  WHEN zif_mia_rap_analyzer=>classifications-standard THEN `Classic Pattern`
-                                  WHEN zif_mia_rap_analyzer=>classifications-custom   THEN `Custom Pattern` ).
+    DATA(generated_output) = zcl_mia_core_factory=>create_rap_output( )->generate_rap_object_table( object ).
 
     generate_header( object-name ).
-    generate_text( rap_pattern ).
-    generate_table( REF #( rap_output ) ).
+    generate_text( generated_output-pattern ).
+    generate_table( REF #( generated_output-output ) ).
 
     RETURN finalize_document( ).
-  ENDMETHOD.
-
-
-  METHOD build_hierarchy_index_table.
-    ASSIGN COMPONENT field OF STRUCTURE layer TO FIELD-SYMBOL(<content>).
-    INSERT VALUE #( level  = 1
-                    object = <content> ) INTO TABLE result.
-
-    build_index_layer( EXPORTING depth         = 2
-                                 actual_entity = layer-cds_entity
-                                 field         = field
-                                 layer         = layer
-                       CHANGING  result        = result ).
-  ENDMETHOD.
-
-
-  METHOD build_index_layer.
-    LOOP AT layer-childs INTO DATA(child) WHERE parent_child = actual_entity.
-      ASSIGN COMPONENT field OF STRUCTURE child TO FIELD-SYMBOL(<content>).
-      INSERT VALUE #( level  = depth
-                      object = <content> ) INTO TABLE result.
-
-      build_index_layer( EXPORTING depth         = depth + 1
-                                   actual_entity = child-cds_entity
-                                   field         = field
-                                   layer         = layer
-                         CHANGING  result        = result ).
-    ENDLOOP.
-  ENDMETHOD.
-
-
-  METHOD build_rap_hierarchy.
-    DATA(link) = zcl_mia_core_factory=>create_object_link( ).
-
-    LOOP AT hierarchies INTO DATA(hierarchy) WHERE object IS NOT INITIAL.
-      DATA(object_link) = link->get_hmtl_link_for_object( object_type = object_type
-                                                          object      = hierarchy-object ).
-
-      IF result IS NOT INITIAL.
-        result &&= `<br>`.
-      ENDIF.
-
-      DO hierarchy-level - 1 TIMES.
-        result &&= depth_level_sign.
-      ENDDO.
-      result &&= | { object_link }|.
-    ENDLOOP.
   ENDMETHOD.
 
 

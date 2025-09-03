@@ -136,6 +136,8 @@ CLASS zcl_mia_rap_analyzer IMPLEMENTATION.
         analyze_service_binding( object_name ).
       WHEN zif_mia_rap_analyzer=>start_object-service_definition.
         analyze_service_definition( object_name ).
+      WHEN zif_mia_rap_analyzer=>start_object-core_data_service.
+        analyze_cds_view( object_name ).
     ENDCASE.
 
     DELETE object_stack WHERE not_found = abap_true.

@@ -10,6 +10,10 @@ ENDCLASS.
 
 CLASS zcl_mia_object_link IMPLEMENTATION.
   METHOD zif_mia_object_link~get_hmtl_link_for_object.
+    IF object IS INITIAL.
+      RETURN ``.
+    ENDIF.
+
     result = SWITCH #( object_type
                        WHEN zif_mia_object_link=>supported_objects-class THEN
                          zif_mia_object_link~get_adt_for_class( object )

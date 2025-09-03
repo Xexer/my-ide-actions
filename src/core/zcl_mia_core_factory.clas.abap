@@ -8,6 +8,11 @@ CLASS zcl_mia_core_factory DEFINITION
     CLASS-METHODS create_object_generator
       RETURNING VALUE(result) TYPE REF TO zif_mia_object_generator.
 
+    "! Generate HTML Output for RAP
+    "! @parameter result | HTML Output
+    CLASS-METHODS create_rap_output
+      RETURNING VALUE(result) TYPE REF TO zif_mia_html_rap.
+
     "! Generate RAP Analyzer Tool
     "! @parameter object_name | Name of the object
     "! @parameter object_type | Type of the object
@@ -90,5 +95,10 @@ CLASS zcl_mia_core_factory IMPLEMENTATION.
   METHOD create_rap_analyzer.
     RETURN NEW zcl_mia_rap_analyzer( object_name = object_name
                                      object_type = object_type ).
+  ENDMETHOD.
+
+
+  METHOD create_rap_output.
+    RETURN NEW zcl_mia_html_rap( ).
   ENDMETHOD.
 ENDCLASS.

@@ -68,6 +68,7 @@ INTERFACE zif_mia_rap_analyzer
     BEGIN OF start_object,
       service_binding    TYPE string VALUE `SRVB/SVB`,
       service_definition TYPE string VALUE `SRVD/SRV`,
+      core_data_service  TYPE string VALUE `DDLS/DF`,
     END OF start_object.
 
   "! Checks the service and returns all objects bellow
