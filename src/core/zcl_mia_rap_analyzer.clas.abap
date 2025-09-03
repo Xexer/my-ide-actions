@@ -179,8 +179,13 @@ CLASS zcl_mia_rap_analyzer IMPLEMENTATION.
     entry->description = content->get_short_description( ).
 
     LOOP AT service_binding->services->all->get( ) INTO DATA(service).
-      analyze_service_definition( name   = CONV #( service->name )
-                                  parent = name ).
+      LOOP AT service->versions->all->get( ) INTO DATA(version).
+        DATA(service_definition) = version->content( )->get_service_definition( ).
+
+        analyze_service_definition( name   = CONV #( service_definition->name )
+                                    parent = name ).
+      ENDLOOP.
+
     ENDLOOP.
 
     entry->loaded = abap_true.
