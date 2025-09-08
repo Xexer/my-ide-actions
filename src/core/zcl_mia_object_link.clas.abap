@@ -32,7 +32,9 @@ CLASS zcl_mia_object_link IMPLEMENTATION.
                        WHEN zif_mia_object_link=>supported_objects-metadata THEN
                          zif_mia_object_link~get_adt_for_metadata( object )
                        WHEN zif_mia_object_link=>supported_objects-domain THEN
-                         zif_mia_object_link~get_adt_for_domain( object ) ).
+                         zif_mia_object_link~get_adt_for_domain( object )
+                       WHEN zif_mia_object_link=>supported_objects-package THEN
+                         zif_mia_object_link~get_adt_for_package( object ) ).
 
     DATA(system_id) = sy-sysid.
 
@@ -82,5 +84,10 @@ CLASS zcl_mia_object_link IMPLEMENTATION.
 
   METHOD zif_mia_object_link~get_adt_for_domain.
     RETURN |/sap/bc/adt/ddic/domains/{ to_lower( object ) }|.
+  ENDMETHOD.
+
+
+  METHOD zif_mia_object_link~get_adt_for_package.
+    RETURN |/sap/bc/adt/packages/{ to_lower( object ) }|.
   ENDMETHOD.
 ENDCLASS.

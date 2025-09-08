@@ -11,6 +11,7 @@ INTERFACE zif_mia_object_link
                database_table     TYPE string VALUE `TABL`,
                cds                TYPE string VALUE `DDL`,
                domain             TYPE string VALUE `DOMA`,
+               package            TYPE string VALUE `DEVC`,
              END OF supported_objects.
 
   "! Build HTML link for object
@@ -82,6 +83,13 @@ INTERFACE zif_mia_object_link
   "! @parameter object | Name of the object
   "! @parameter result | ADT link
   METHODS get_adt_for_domain
+    IMPORTING !object       TYPE csequence
+    RETURNING VALUE(result) TYPE string.
+
+  "! Build ADT link for package
+  "! @parameter object | Name of the object
+  "! @parameter result | ADT link
+  METHODS get_adt_for_package
     IMPORTING !object       TYPE csequence
     RETURNING VALUE(result) TYPE string.
 ENDINTERFACE.

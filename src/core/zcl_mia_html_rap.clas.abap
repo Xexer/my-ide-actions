@@ -84,6 +84,11 @@ CLASS zcl_mia_html_rap DEFINITION
     "! @parameter output | Output structure
     METHODS add_to_output
       IMPORTING !output TYPE zif_mia_html_rap=>rap_output.
+
+    "! Add package entry
+    "! @parameter object | RAP Object data
+    METHODS add_package
+      IMPORTING !object TYPE zif_mia_rap_analyzer=>rap_object.
 ENDCLASS.
 
 
@@ -93,6 +98,7 @@ CLASS zcl_mia_html_rap IMPLEMENTATION.
     link = zcl_mia_core_factory=>create_object_link( ).
 
     add_header( ).
+    add_package( object ).
     add_service_binding( object ).
     add_service_definition( object ).
 
@@ -254,5 +260,15 @@ CLASS zcl_mia_html_rap IMPLEMENTATION.
     ENDIF.
 
     INSERT output INTO TABLE outputs.
+  ENDMETHOD.
+
+
+  METHOD add_package.
+    add_to_output( VALUE #(
+                       layer    = get_formatted_layer( text-013 )
+                       object   = link->get_hmtl_link_for_object( object_type = link->supported_objects-package
+                                                                  object      = object-package )
+                       behavior = ''
+                       metadata = '' ) ).
   ENDMETHOD.
 ENDCLASS.

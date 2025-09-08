@@ -17,15 +17,24 @@ CLASS zcl_mia_rap_extension_action IMPLEMENTATION.
         RETURN.
     ENDTRY.
 
-*    DATA(generator) = zcl_mia_core_factory=>create_object_generator( ).
-*    DATA(generation_result) = generator->generate_objects_via_setting( setting ).
-*
-*    DATA(output) = zcl_mia_core_factory=>create_html_output( ).
-*    DATA(html_output) = output->generate_html_output( generation_result ).
+    DATA(analyzer) = zcl_mia_core_factory=>create_rap_analyzer(
+        object_name = input-service_name
+        object_type = zif_mia_rap_analyzer=>start_object-service_binding ).
+    DATA(rap_object) = analyzer->get_rap_object( ).
 
-    DATA(action_result) = cl_aia_result_factory=>create_html_popup_result( ).
-    action_result->set_content( |Test: { input-service_name }| ).
+    DATA(extension) = zcl_mia_core_factory=>create_extension_steps( rap_object ).
 
-    result = action_result.
+    CASE input-scenario.
+      WHEN zcl_mia_rap_extension_input=>extension_scenario-field.
+        DATA(converted_output) = extension->generate_steps_for_new_field( VALUE #( entity = input-entity
+                                                                                   name   = input-new_field ) ).
+    ENDCASE.
+
+    DATA(html_content) = zcl_mia_core_factory=>create_html_output( )->generate_generic_output( REF #( converted_output ) ).
+
+    DATA(html_output) = cl_aia_result_factory=>create_html_popup_result( ).
+    html_output->set_content( html_content ).
+
+    result = html_output.
   ENDMETHOD.
 ENDCLASS.

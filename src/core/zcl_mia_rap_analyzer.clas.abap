@@ -118,6 +118,21 @@ CLASS zcl_mia_rap_analyzer DEFINITION
     "! @parameter result | Classification
     METHODS get_model_classification
       RETURNING VALUE(result) TYPE string.
+
+    "! Get entities from View Entity
+    "! @parameter name   | Name of the View
+    "! @parameter result | Value Help
+    METHODS get_entities_from_view_entity
+      IMPORTING !name         TYPE sxco_cds_object_name
+      RETURNING VALUE(result) TYPE zif_mia_rap_analyzer=>action_values.
+
+    "! Get entities from Custom Entity
+    "! @parameter name   | Name of the View
+    "! @parameter result | Value Help
+    METHODS get_entities_from_custom
+      IMPORTING !name         TYPE sxco_cds_object_name
+      RETURNING VALUE(result) TYPE zif_mia_rap_analyzer=>action_values.
+
 ENDCLASS.
 
 
@@ -460,7 +475,9 @@ CLASS zcl_mia_rap_analyzer IMPLEMENTATION.
     result-classification = configuration->description.
 
     TRY.
-        result-service_binding = object_stack[ type = zif_mia_rap_analyzer=>types-service_binding ]-name.
+        DATA(binding) = object_stack[ type = zif_mia_rap_analyzer=>types-service_binding ].
+        result-service_binding = binding-name.
+        result-package         = binding-package.
       CATCH cx_sy_itab_line_not_found.
         CLEAR result-service_binding.
     ENDTRY.
@@ -552,5 +569,67 @@ CLASS zcl_mia_rap_analyzer IMPLEMENTATION.
 
   METHOD get_model_classification.
     RETURN object_stack[ type = zif_mia_rap_analyzer=>types-configuration ]-description.
+  ENDMETHOD.
+
+
+  METHOD zif_mia_rap_analyzer~get_entities_for_service.
+    DATA(service_binding) = xco_cp_abap_repository=>object->srvb->for( service_name ).
+    IF NOT service_binding->exists( ).
+      RETURN.
+    ENDIF.
+
+    LOOP AT service_binding->services->all->get( ) INTO DATA(service).
+      LOOP AT service->versions->all->get( ) INTO DATA(version).
+        DATA(service_definition) = version->content( )->get_service_definition( ).
+
+        LOOP AT service_definition->exposures->all->get( ) INTO DATA(exposure).
+          DATA(definition) = exposure->content( )->get_cds_entity( )->get_data_definition( ).
+
+          IF definition->view_entity( )->content( )->get_root_indicator( ) = abap_true.
+            RETURN get_entities_from_view_entity( definition->name ).
+          ELSEIF definition->custom_entity( )->content( )->get_root_indicator( ) = abap_true.
+            RETURN get_entities_from_custom( definition->name ).
+          ENDIF.
+        ENDLOOP.
+      ENDLOOP.
+    ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD get_entities_from_view_entity.
+    DATA(cds) = xco_cp_cds=>view_entity( name ).
+
+    DO.
+      DATA(source) = cds->content( )->get_data_source( ).
+
+      DATA(deeper_cds) = xco_cp_cds=>view_entity( source-view_entity ).
+      IF deeper_cds->exists( ).
+        cds = deeper_cds.
+      ELSE.
+        EXIT.
+      ENDIF.
+    ENDDO.
+
+    INSERT VALUE #( name = cds->name ) INTO TABLE result.
+    ##TODO "Deep analysis
+    LOOP AT cds->compositions->all->get( ) INTO DATA(composition).
+      INSERT VALUE #( name        = composition->target
+                      description = composition->content( )->get_alias( ) ) INTO TABLE result.
+    ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD get_entities_from_custom.
+    DATA(cds) = xco_cp_cds=>custom_entity( name ).
+
+    INSERT VALUE #( name = cds->name ) INTO TABLE result.
+    ##TODO "Deep analysis
+    LOOP AT cds->fields->all->get( ) INTO DATA(field).
+      DATA(composition) = field->content( )->get_composition( ).
+
+      IF composition-target IS NOT INITIAL.
+        INSERT VALUE #( name = composition-target ) INTO TABLE result.
+      ENDIF.
+    ENDLOOP.
   ENDMETHOD.
 ENDCLASS.

@@ -1,6 +1,8 @@
 INTERFACE zif_mia_rap_analyzer
   PUBLIC.
 
+  TYPES action_values TYPE STANDARD TABLE OF if_sd_value_help_dsni=>ty_named_item WITH EMPTY KEY.
+
   TYPES:
     BEGIN OF entity,
       name        TYPE string,
@@ -43,6 +45,7 @@ INTERFACE zif_mia_rap_analyzer
       consumption        TYPE rap_layer,
       service_definition TYPE string,
       service_binding    TYPE string,
+      package            TYPE string,
       domains            TYPE string_table,
     END OF rap_object.
 
@@ -80,4 +83,11 @@ INTERFACE zif_mia_rap_analyzer
   "! @parameter result | RAP Objects structure
   METHODS get_rap_object
     RETURNING VALUE(result) TYPE rap_object.
+
+  "! Get the entities as Value Help for Action
+  "! @parameter service_name | Name of the Service
+  "! @parameter result       | Value help
+  METHODS get_entities_for_service
+    IMPORTING service_name  TYPE string
+    RETURNING VALUE(result) TYPE action_values.
 ENDINTERFACE.

@@ -84,6 +84,12 @@
      <ENTRY>Domain</ENTRY>
      <LENGTH>16</LENGTH>
     </item>
+    <item>
+     <ID>I</ID>
+     <KEY>013</KEY>
+     <ENTRY>Package</ENTRY>
+     <LENGTH>17</LENGTH>
+    </item>
    </TPOOL>
   </asx:values>
  </asx:abap>

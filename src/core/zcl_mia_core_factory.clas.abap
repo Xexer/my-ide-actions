@@ -53,6 +53,13 @@ CLASS zcl_mia_core_factory DEFINITION
     "! @parameter result | Object Link Creator
     CLASS-METHODS create_object_link
       RETURNING VALUE(result) TYPE REF TO zif_mia_object_link.
+
+    "! Generate Object for Extension Scenario
+    "! @parameter object | RAP Object
+    "! @parameter result | Scenario creator
+    CLASS-METHODS create_extension_steps
+      IMPORTING !object       TYPE zif_mia_rap_analyzer=>rap_object
+      RETURNING VALUE(result) TYPE REF TO zif_mia_extension_scenario.
 ENDCLASS.
 
 
@@ -100,5 +107,12 @@ CLASS zcl_mia_core_factory IMPLEMENTATION.
 
   METHOD create_rap_output.
     RETURN NEW zcl_mia_html_rap( ).
+  ENDMETHOD.
+
+
+  METHOD create_extension_steps.
+    RETURN SWITCH #( object-classification
+                     WHEN zif_mia_rap_analyzer=>classifications-standard THEN NEW zcl_mia_extension_classic( object )
+                     WHEN zif_mia_rap_analyzer=>classifications-custom   THEN NEW zcl_mia_extension_custom( object ) ).
   ENDMETHOD.
 ENDCLASS.
