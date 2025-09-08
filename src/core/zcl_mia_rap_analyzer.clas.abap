@@ -133,6 +133,20 @@ CLASS zcl_mia_rap_analyzer DEFINITION
       IMPORTING !name         TYPE sxco_cds_object_name
       RETURNING VALUE(result) TYPE zif_mia_rap_analyzer=>action_values.
 
+    "! Add subnotes of the View Entity
+    "! @parameter name   | Name of the View
+    "! @parameter values | Value Help
+    METHODS add_compositions_view_entity
+      IMPORTING !name   TYPE sxco_cds_object_name
+      CHANGING  !values TYPE zif_mia_rap_analyzer=>action_values.
+
+    "! Add subnotes of the Custom Entity
+    "! @parameter name   | Name of the View
+    "! @parameter values | Value Help
+    METHODS add_compositions_custom
+      IMPORTING !name   TYPE sxco_cds_object_name
+      CHANGING  !values TYPE zif_mia_rap_analyzer=>action_values.
+
 ENDCLASS.
 
 
@@ -611,10 +625,24 @@ CLASS zcl_mia_rap_analyzer IMPLEMENTATION.
     ENDDO.
 
     INSERT VALUE #( name = cds->name ) INTO TABLE result.
-    ##TODO "Deep analysis
+
+    add_compositions_view_entity( EXPORTING name   = cds->name
+                                  CHANGING  values = result ).
+  ENDMETHOD.
+
+
+  METHOD add_compositions_view_entity.
+    DATA(cds) = xco_cp_cds=>view_entity( name ).
+    IF NOT cds->exists( ).
+      RETURN.
+    ENDIF.
+
     LOOP AT cds->compositions->all->get( ) INTO DATA(composition).
       INSERT VALUE #( name        = composition->target
-                      description = composition->content( )->get_alias( ) ) INTO TABLE result.
+                      description = composition->content( )->get_alias( ) ) INTO TABLE values.
+
+      add_compositions_view_entity( EXPORTING name   = composition->target
+                                    CHANGING  values = values ).
     ENDLOOP.
   ENDMETHOD.
 
@@ -623,12 +651,26 @@ CLASS zcl_mia_rap_analyzer IMPLEMENTATION.
     DATA(cds) = xco_cp_cds=>custom_entity( name ).
 
     INSERT VALUE #( name = cds->name ) INTO TABLE result.
-    ##TODO "Deep analysis
+
+    add_compositions_custom( EXPORTING name   = cds->name
+                             CHANGING  values = result ).
+  ENDMETHOD.
+
+
+  METHOD add_compositions_custom.
+    DATA(cds) = xco_cp_cds=>custom_entity( name ).
+    IF NOT cds->exists( ).
+      RETURN.
+    ENDIF.
+
     LOOP AT cds->fields->all->get( ) INTO DATA(field).
       DATA(composition) = field->content( )->get_composition( ).
 
       IF composition-target IS NOT INITIAL.
-        INSERT VALUE #( name = composition-target ) INTO TABLE result.
+        INSERT VALUE #( name = composition-target ) INTO TABLE values.
+
+        add_compositions_custom( EXPORTING name   = composition-target
+                                 CHANGING  values = values ).
       ENDIF.
     ENDLOOP.
   ENDMETHOD.
