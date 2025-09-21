@@ -140,7 +140,9 @@ branch : abap.char(50);
 company_description : abap.char(255);
 ```
 
-## Security
+## Influence on System
+
+### Security
 
 Here you will find a list of the IDE actions that contact services outside the system when used and in detail which data is transferred.
 
@@ -148,6 +150,18 @@ Here you will find a list of the IDE actions that contact services outside the s
 |------------------|---------------------|--------------------------|
 | SELECT Converter | Software-Heroes API | -> Full SELECT Statement |
 | Code Snippets    | GitHub Repository   | <- Code Templates        |
+
+### Changeability
+
+Here you can find information about whether IDE Actions make changes to the system and what is changed.
+
+| IDE Actions              | Change                 |
+|--------------------------|------------------------|
+| Create new class         | Creates new objects    |
+| SELECT Converter         | Change code            |
+| Code Snippets            | Insert new code        |
+| Scope Launchpad          | Change status of items |
+| Consumption Model fields | Insert new code        |
 
 ## Public Material
 
