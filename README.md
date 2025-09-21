@@ -140,6 +140,15 @@ branch : abap.char(50);
 company_description : abap.char(255);
 ```
 
+## Security
+
+Here you will find a list of the IDE actions that contact services outside the system when used and in detail which data is transferred.
+
+| IDE Actions      | Endpoint            | Data                     |
+|------------------|---------------------|--------------------------|
+| SELECT Converter | Software-Heroes API | -> Full SELECT Statement |
+| Code Snippets    | GitHub Repository   | <- Code Templates        |
+
 ## Public Material
 
 - Software-Heroes: [ADT - My IDE Actions](https://software-heroes.com/en/blog/tools-adt-my-ide-actions-en)
