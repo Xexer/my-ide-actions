@@ -391,6 +391,10 @@ CLASS zcl_mia_rap_analyzer IMPLEMENTATION.
     LOOP AT table->fields->all->get( ) INTO DATA(field).
       TRY.
           DATA(domain) = field->content( )->get_type( )->get_data_element( )->content( )->get_data_type( )->get_domain( ).
+          IF domain IS INITIAL.
+            CONTINUE.
+          ENDIF.
+
           analyze_domain( name   = CONV #( domain->name )
                           parent = name ).
 
@@ -505,6 +509,9 @@ CLASS zcl_mia_rap_analyzer IMPLEMENTATION.
     LOOP AT object_stack INTO object WHERE type = zif_mia_rap_analyzer=>types-domain.
       INSERT object-name INTO TABLE result-domains.
     ENDLOOP.
+
+    SORT result-domains BY table_line.
+    DELETE ADJACENT DUPLICATES FROM result-domains COMPARING ALL FIELDS.
   ENDMETHOD.
 
 
