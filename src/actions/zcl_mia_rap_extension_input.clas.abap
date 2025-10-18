@@ -24,7 +24,7 @@ CLASS zcl_mia_rap_extension_input DEFINITION
         scenario     TYPE scenario,
         "! <p class="shorttext">Entity</p>
         entity       TYPE string,
-        "! <p class="shorttext">New field</p>
+        "! <p class="shorttext">New field (DB)</p>
         new_field    TYPE string,
       END OF input.
 ENDCLASS.

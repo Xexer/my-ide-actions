@@ -283,6 +283,16 @@ CLASS zcl_mia_object_generator IMPLEMENTATION.
       MESSAGE e007(z_mia_core) INTO dummy.
       INSERT xco_cp=>sy->message( ) INTO TABLE result.
     ENDIF.
+
+    IF run_setting-class IS NOT INITIAL AND xco_cp_abap=>class( run_setting-class )->exists( ).
+      MESSAGE e008(z_mia_core) WITH run_setting-class INTO dummy.
+      INSERT xco_cp=>sy->message( ) INTO TABLE result.
+    ENDIF.
+
+    IF run_setting-interface IS NOT INITIAL AND xco_cp_abap=>interface( run_setting-interface )->exists( ).
+      MESSAGE e009(z_mia_core) WITH run_setting-interface INTO dummy.
+      INSERT xco_cp=>sy->message( ) INTO TABLE result.
+    ENDIF.
   ENDMETHOD.
 
 

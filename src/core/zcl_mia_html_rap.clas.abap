@@ -115,8 +115,9 @@ CLASS zcl_mia_html_rap IMPLEMENTATION.
 
     result-output  = outputs.
     result-pattern = SWITCH #( object-classification
-                               WHEN zif_mia_rap_analyzer=>classifications-standard THEN TEXT-003
-                               WHEN zif_mia_rap_analyzer=>classifications-custom   THEN TEXT-004 ).
+                               WHEN zif_mia_rap_analyzer=>classifications-standard  THEN TEXT-003
+                               WHEN zif_mia_rap_analyzer=>classifications-custom    THEN TEXT-004
+                               WHEN zif_mia_rap_analyzer=>classifications-singleton THEN TEXT-014 ).
     result-pattern = |<span style="color:#e65100;font-weight:bold">[{ result-pattern }]</span>|.
   ENDMETHOD.
 
@@ -264,11 +265,10 @@ CLASS zcl_mia_html_rap IMPLEMENTATION.
 
 
   METHOD add_package.
-    add_to_output( VALUE #(
-                       layer    = get_formatted_layer( text-013 )
-                       object   = link->get_hmtl_link_for_object( object_type = link->supported_objects-package
-                                                                  object      = object-package )
-                       behavior = ''
-                       metadata = '' ) ).
+    add_to_output( VALUE #( layer    = get_formatted_layer( TEXT-013 )
+                            object   = link->get_hmtl_link_for_object( object_type = link->supported_objects-package
+                                                                       object      = object-package )
+                            behavior = ''
+                            metadata = '' ) ).
   ENDMETHOD.
 ENDCLASS.

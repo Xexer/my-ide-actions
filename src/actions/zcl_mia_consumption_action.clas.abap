@@ -39,7 +39,16 @@ CLASS zcl_mia_consumption_action IMPLEMENTATION.
     DATA(analyzer) = zcl_mia_core_factory=>create_class_analyzer( CONV #( input-class ) ).
 
     LOOP AT analyzer->get_structure_for_type( input-structure ) INTO DATA(definition).
-      result &&= |\n { definition-name } : { definition-type };|.
+      DATA(key_field) = ``.
+      IF definition-key = abap_true.
+        key_field = `key `.
+      ENDIF.
+
+      IF definition-label IS NOT INITIAL.
+        result &&= |\n @EndUserText.label: '{ definition-label }'|.
+      ENDIF.
+
+      result &&= |\n { key_field }{ definition-name } : { definition-type };|.
     ENDLOOP.
   ENDMETHOD.
 ENDCLASS.

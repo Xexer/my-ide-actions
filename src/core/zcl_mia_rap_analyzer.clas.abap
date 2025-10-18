@@ -147,6 +147,18 @@ CLASS zcl_mia_rap_analyzer DEFINITION
       IMPORTING !name   TYPE sxco_cds_object_name
       CHANGING  !values TYPE zif_mia_rap_analyzer=>action_values.
 
+    "! Check if a key field has a hard-coded value (Singleton)
+    "! @parameter cds    | Core Data Service object
+    "! @parameter result | X = Singleton, '' = No singleton
+    METHODS is_singleton_pattern
+      IMPORTING !cds          TYPE REF TO if_xco_cds_view_entity
+      RETURNING VALUE(result) TYPE abap_boolean.
+
+    "! Set pattern for the RAP object
+    "! @parameter pattern | Pattern identification
+    METHODS set_pattern
+      IMPORTING !pattern TYPE string.
+
 ENDCLASS.
 
 
@@ -244,16 +256,15 @@ CLASS zcl_mia_rap_analyzer IMPLEMENTATION.
 
     LOOP AT service_definition->exposures->all->get( ) INTO DATA(exposure).
       DATA(definition) = exposure->content( )->get_cds_entity( )->get_data_definition( ).
-      DATA(configuration) = REF #( object_stack[ type = zif_mia_rap_analyzer=>types-configuration ] ).
 
       IF definition->view_entity( )->content( )->get_root_indicator( ) = abap_true.
-        configuration->description = zif_mia_rap_analyzer=>classifications-standard.
+        set_pattern( zif_mia_rap_analyzer=>classifications-standard ).
         analyze_cds_view( name   = CONV #( exposure->cds_entity )
                           parent = name
                           alias  = exposure->content( )->get_alias( ) ).
 
       ELSEIF definition->custom_entity( )->content( )->get_root_indicator( ) = abap_true.
-        configuration->description = zif_mia_rap_analyzer=>classifications-custom.
+        set_pattern( zif_mia_rap_analyzer=>classifications-custom ).
         analyze_cds_custom( name   = CONV #( exposure->cds_entity )
                             parent = name
                             alias  = exposure->content( )->get_alias( ) ).
@@ -314,6 +325,10 @@ CLASS zcl_mia_rap_analyzer IMPLEMENTATION.
     IF entry->root = abap_true.
       analyze_behavior( name   = entry->name
                         parent = entry->name ).
+
+      IF is_singleton_pattern( cds ).
+        set_pattern( zif_mia_rap_analyzer=>classifications-singleton ).
+      ENDIF.
     ENDIF.
 
     entry->loaded = abap_true.
@@ -680,5 +695,27 @@ CLASS zcl_mia_rap_analyzer IMPLEMENTATION.
                                  CHANGING  values = values ).
       ENDIF.
     ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD is_singleton_pattern.
+    LOOP AT cds->fields->all->get( ) INTO DATA(field).
+      DATA(field_content) = field->content( )->get( ).
+      IF field_content-key_indicator = abap_false.
+        CONTINUE.
+      ENDIF.
+
+      DATA(field_value) = field_content-expression->if_xco_text~get_lines( )->join( )->value.
+      IF field_value = '1'.
+        RETURN abap_true.
+      ENDIF.
+    ENDLOOP.
+
+    RETURN abap_false.
+  ENDMETHOD.
+
+
+  METHOD set_pattern.
+    object_stack[ type = zif_mia_rap_analyzer=>types-configuration ]-description = pattern.
   ENDMETHOD.
 ENDCLASS.

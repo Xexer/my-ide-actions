@@ -63,8 +63,9 @@ INTERFACE zif_mia_rap_analyzer
 
   CONSTANTS:
     BEGIN OF classifications,
-      standard TYPE string VALUE `STANDARD`,
-      custom   TYPE string VALUE `CUSTOM`,
+      standard  TYPE string VALUE `STANDARD`,
+      custom    TYPE string VALUE `CUSTOM`,
+      singleton TYPE string VALUE `SINGLETON`,
     END OF classifications.
 
   CONSTANTS:

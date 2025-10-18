@@ -39,6 +39,34 @@ CLASS zcl_mia_class_analyzer DEFINITION
     METHODS get_type
       IMPORTING !type         TYPE string
       RETURNING VALUE(result) TYPE string.
+
+    "! Check if key property is assigned
+    "! @parameter description | Description field
+    "! @parameter result      | X = Key field, '' = normal field
+    METHODS get_key_property
+      IMPORTING !description  TYPE string
+      RETURNING VALUE(result) TYPE abap_boolean.
+
+    "! Extract label from line
+    "! @parameter description | Description field
+    "! @parameter result      | Only label
+    METHODS get_label_property
+      IMPORTING !description  TYPE string
+      RETURNING VALUE(result) TYPE string.
+
+    "! Check if the field is a special field
+    "! @parameter description | Description field
+    "! @parameter result      | X = Skip, '' = Don't skip
+    METHODS skip_special_fields
+      IMPORTING !description  TYPE string
+      RETURNING VALUE(result) TYPE abap_bool.
+
+    "! Remove special signs and spaces from text
+    "! @parameter line   | Field
+    "! @parameter result | Normalized text field
+    METHODS normalize_line
+      IMPORTING !line         TYPE string
+      RETURNING VALUE(result) TYPE string.
 ENDCLASS.
 
 
@@ -88,13 +116,8 @@ CLASS zcl_mia_class_analyzer IMPLEMENTATION.
     DATA(lines) = xco_cp=>string( source )->split( |\n| )->value.
 
     LOOP AT lines INTO DATA(line) WHERE table_line CS 'TYPE'.
-      line = replace( val  = line
-                      sub  = |\n|
-                      with = ''  ).
-      line = replace( val  = line
-                      sub  = |\r|
-                      with = ''  ).
-
+      DATA(actual_line) = sy-tabix.
+      line = normalize_line( line ).
       DATA(fields) = xco_cp=>string( line )->split( |TYPE| )->value.
 
       TRY.
@@ -104,14 +127,27 @@ CLASS zcl_mia_class_analyzer IMPLEMENTATION.
           CONTINUE.
       ENDTRY.
 
+      TRY.
+          DATA(description) = lines[ actual_line - 1 ].
+          description = normalize_line( description ).
+        CATCH cx_sy_itab_line_not_found.
+          CLEAR description.
+      ENDTRY.
+
+      IF skip_special_fields( description ).
+        CONTINUE.
+      ENDIF.
+
       name = replace( val  = name
                       sub  = ` `
                       with = ``
                       occ  = 0 ).
       type = get_type( type ).
 
-      INSERT VALUE #( name = name
-                      type = type )
+      INSERT VALUE #( name  = name
+                      type  = type
+                      key   = get_key_property( description )
+                      label = get_label_property( description ) )
              INTO TABLE result.
     ENDLOOP.
   ENDMETHOD.
@@ -160,5 +196,56 @@ CLASS zcl_mia_class_analyzer IMPLEMENTATION.
       WHEN OTHERS.
         RETURN simple_type.
     ENDCASE.
+  ENDMETHOD.
+
+
+  METHOD get_key_property.
+    IF to_upper( description ) CS `<EM>KEY PROPERTY</EM>`.
+      RETURN abap_true.
+    ENDIF.
+  ENDMETHOD.
+
+
+  METHOD get_label_property.
+    IF substring( val = description
+                  len = 2 ) <> `"!`.
+      RETURN ``.
+    ENDIF.
+
+    result = substring( val = description
+                        off = 3 ).
+
+    DATA(position) = find( val = result
+                           sub = '>'
+                           occ = -1 ).
+    IF position = -1.
+      RETURN.
+    ENDIF.
+
+    result = substring( val = result
+                        off = position + 1 ).
+    result = condense( result ).
+  ENDMETHOD.
+
+
+  METHOD skip_special_fields.
+    IF    to_upper( description ) CS `<EM>VALUE CONTROL STRUCTURE</EM>`
+       OR to_upper( description ) CS `ODATA.ETAG`.
+      RETURN abap_true.
+    ENDIF.
+  ENDMETHOD.
+
+
+  METHOD normalize_line.
+    result = line.
+
+    result = replace( val  = result
+                      sub  = |\n|
+                      with = ''  ).
+    result = replace( val  = result
+                      sub  = |\r|
+                      with = ''  ).
+
+    result = condense( result ).
   ENDMETHOD.
 ENDCLASS.

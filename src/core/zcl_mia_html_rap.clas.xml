@@ -90,6 +90,12 @@
      <ENTRY>Package</ENTRY>
      <LENGTH>17</LENGTH>
     </item>
+    <item>
+     <ID>I</ID>
+     <KEY>014</KEY>
+     <ENTRY>Singleton Pattern</ENTRY>
+     <LENGTH>27</LENGTH>
+    </item>
    </TPOOL>
   </asx:values>
  </asx:abap>

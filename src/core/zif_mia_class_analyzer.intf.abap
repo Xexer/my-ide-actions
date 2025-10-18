@@ -4,8 +4,10 @@ INTERFACE zif_mia_class_analyzer
   TYPES class_name TYPE sxco_ao_object_name.
 
   TYPES: BEGIN OF structure_type,
-           name TYPE string,
-           type TYPE string,
+           name  TYPE string,
+           type  TYPE string,
+           key   TYPE abap_boolean,
+           label TYPE string,
          END OF structure_type.
   TYPES structure_types TYPE STANDARD TABLE OF structure_type WITH EMPTY KEY.
 

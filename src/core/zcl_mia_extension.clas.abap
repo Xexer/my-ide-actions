@@ -11,25 +11,39 @@ CLASS zcl_mia_extension DEFINITION
     TYPES: BEGIN OF extracted_entity,
              interface   TYPE zif_mia_rap_analyzer=>rap_layer,
              consumption TYPE zif_mia_rap_analyzer=>rap_layer,
+             root        TYPE abap_boolean,
            END OF extracted_entity.
 
     DATA object          TYPE zif_mia_rap_analyzer=>rap_object.
     DATA link            TYPE REF TO zif_mia_object_link.
     DATA collected_steps TYPE zif_mia_extension_scenario=>steps.
 
+    "! Collect different steps for output table
+    "! @parameter option      | Option (OPTIONAL, CHOOSE, etc.)
+    "! @parameter description | Step description
+    "! @parameter code        | Example code
+    "! @parameter number      | Number for sorting
     METHODS collect_step
       IMPORTING !option      TYPE string DEFAULT ``
                 !description TYPE string
                 !code        TYPE string DEFAULT ``
                 !number      TYPE string DEFAULT ``.
 
+    "! Finish output table (steps, checkboxes, header)
+    "! @parameter result | Finished steps for output
     METHODS finalize_output_table
       RETURNING VALUE(result) TYPE zif_mia_extension_scenario=>steps.
 
+    "! Extract the RAP layer for the entity
+    "! @parameter entity | Name of the entity
+    "! @parameter result | Information about level
     METHODS extract_layer_for_entity
       IMPORTING !entity       TYPE string
       RETURNING VALUE(result) TYPE extracted_entity.
 
+    "! Convert DB field (with _) to CDS field (without _)
+    "! @parameter field  | Name of the field (new_field)
+    "! @parameter result | CDS Field (NewField)
     METHODS convert_db_field_to_cds
       IMPORTING !field        TYPE string
       RETURNING VALUE(result) TYPE string.
@@ -86,11 +100,11 @@ CLASS zcl_mia_extension IMPLEMENTATION.
       ENDIF.
     ENDLOOP.
 
-    INSERT VALUE #( number      = 'Number'
-                    option      = 'Option'
-                    description = 'Description'
-                    code        = 'Code Example'
-                    status      = 'Status' )
+    INSERT VALUE #( number      = TEXT-001
+                    option      = TEXT-002
+                    description = TEXT-003
+                    code        = TEXT-004
+                    status      = TEXT-005 )
            INTO result INDEX 1.
   ENDMETHOD.
 
@@ -103,6 +117,7 @@ CLASS zcl_mia_extension IMPLEMENTATION.
     IF object-base-cds_entity = entity.
       result-interface   = object-base.
       result-consumption = object-consumption.
+      result-root        = abap_true.
     ELSE.
       LOOP AT object-base-childs INTO DATA(child) WHERE cds_entity = entity.
         result-interface = CORRESPONDING #( child ).

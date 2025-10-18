@@ -112,7 +112,8 @@ CLASS zcl_mia_core_factory IMPLEMENTATION.
 
   METHOD create_extension_steps.
     RETURN SWITCH #( object-classification
-                     WHEN zif_mia_rap_analyzer=>classifications-standard THEN NEW zcl_mia_extension_classic( object )
-                     WHEN zif_mia_rap_analyzer=>classifications-custom   THEN NEW zcl_mia_extension_custom( object ) ).
+                     WHEN zif_mia_rap_analyzer=>classifications-standard  THEN NEW zcl_mia_extension_classic( object )
+                     WHEN zif_mia_rap_analyzer=>classifications-custom    THEN NEW zcl_mia_extension_custom( object )
+                     WHEN zif_mia_rap_analyzer=>classifications-singleton THEN NEW zcl_mia_extension_singleton( object ) ).
   ENDMETHOD.
 ENDCLASS.
