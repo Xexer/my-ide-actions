@@ -77,6 +77,7 @@ CLASS zcl_mia_extension_classic IMPLEMENTATION.
                         field = new_field-name ).
     add_step_consumption( layer = enhanced_entity-consumption
                           field = new_field-name ).
+    add_step_activate( ).
     add_step_behavior( layer = enhanced_entity-interface
                        field = new_field-name ).
     add_step_draft( enhanced_entity-interface ).
@@ -142,7 +143,7 @@ CLASS zcl_mia_extension_classic IMPLEMENTATION.
         number      = `a`
         option      = zif_mia_extension_scenario=>options-choose
         description = |Add field <strong>{ cds_field }</strong> to Metadata Extension { link_ref } as LineItem.|
-        code        = |@UI.LineItem: [ \{ position: 10, qualifier: '' \} ]<br>{ cds_field };| ).
+        code        = |@UI.lineItem: [ \{ position: 10, qualifier: '' \} ]<br>{ cds_field };| ).
 
     collect_step(
         number      = `b`

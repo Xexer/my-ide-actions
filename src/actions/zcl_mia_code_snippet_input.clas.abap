@@ -105,6 +105,7 @@ CLASS zcl_mia_code_snippet_input IMPLEMENTATION.
     configuration->get_element( `template_behavior` )->set_sideeffect( after_update = abap_true ).
     configuration->get_element( `entity` )->set_types( VALUE #( ( `DDLS/DF` ) ) ).
     configuration->get_element( `data_element` )->set_types( VALUE #( ( `DTEL/DE` ) ) ).
+    configuration->get_element( `field` )->set_values( if_sd_config_element=>values_kind-domain_specific_named_items ).
 
     CASE input-type.
       WHEN zcl_mia_code_snippet_action=>supported_types-table.
@@ -152,5 +153,10 @@ CLASS zcl_mia_code_snippet_input IMPLEMENTATION.
   METHOD if_aia_sd_action_input~get_side_effect_provider.
     RETURN cl_sd_sideeffect_provider=>create( determination   = NEW zcl_mia_code_snippet_side_eff( )
                                               feature_control = NEW zcl_mia_code_snippet_side_eff( ) ).
+  ENDMETHOD.
+
+
+  METHOD if_aia_sd_action_input~get_value_help_provider.
+    result = cl_sd_value_help_provider=>create( NEW zcl_mia_code_snippet_value( ) ).
   ENDMETHOD.
 ENDCLASS.
