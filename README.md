@@ -80,6 +80,36 @@ Currently, IDE Actions cannot be saved in Git, so the IDE Actions must first be 
 | Number of Focused Resources  | One                                                                                                         |
 | Object Type (Filter)         | DDLS                                                                                                        |
 
+### RAP Analyzer
+
+![Consumption Model](./img/image-10.png)
+
+| Object                       | Value                                                                                                       |
+|------------------------------|-------------------------------------------------------------------------------------------------------------|
+| Package                      | Z_MIA_ACTIONS                                                                                               |
+| IDE Action Name              | Z_MIA_RAP_ANALYZER                                                                                          |
+| Title                        | MIA: Analyze RAP Object                                                                                     |
+| Summary                      | Analyze the RAP object and list all objects that contain to this object.                                    |
+| Implementing Class           | ZCL_MIA_RAP_ANAYLZER_ACTION                                                                                 |
+| Input UI Configuration Class |                                                                                                             |
+| Number of Focused Resources  | One                                                                                                         |
+| Object Type (Filter)         | SRVB                                                                                                        |
+
+### RAP Extension Assistant
+
+![Consumption Model](./img/image-09.png)
+
+| Object                       | Value                                                                                                       |
+|------------------------------|-------------------------------------------------------------------------------------------------------------|
+| Package                      | Z_MIA_ACTIONS                                                                                               |
+| IDE Action Name              | Z_MIA_RAP_EXTENSION                                                                                         |
+| Title                        | MIA: RAP Extension Assistant                                                                                |
+| Summary                      | Extend a RAP object via the different layers with a little assistant for the needed steps.                  |
+| Implementing Class           | ZCL_MIA_RAP_EXTENSION_ACTION                                                                                |
+| Input UI Configuration Class | ZCL_MIA_RAP_EXTENSION_INPUT                                                                                 |
+| Number of Focused Resources  | One                                                                                                         |
+| Object Type (Filter)         | SRVB                                                                                                        |
+
 ## Features
 
 Currently the following actions and features are included.
@@ -135,10 +165,21 @@ TYPES:
 Finally, the complete field mapping is written to the custom entity to establish integration.
 
 ```ABAP 
-company_name : abap.char(60);
+@EndUserText.label: 'CompanyName'
+key company_name : abap.char(60);
+@EndUserText.label: 'Branch'
 branch : abap.char(50);
+@EndUserText.label: 'CompanyDescription'
 company_description : abap.char(255);
 ```
+
+### RAP Analyzer
+
+Analyzes the service and the RAP pattern used, and finally displays an overview of the most important objects and hierarchies. This should enable easier analysis and navigation within the RAP object.
+
+### RAP Extension Assistant
+
+Returns some suggested extension scenarios to help extend the RAP object. The solution is suggested step by step, allowing developers to implement it with code examples.
 
 ## Influence on System
 
