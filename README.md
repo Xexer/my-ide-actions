@@ -13,7 +13,7 @@ Currently, IDE Actions cannot be saved in Git, so the IDE Actions must first be 
 |------------------------------|-------------------------------------------------------------------------------------------------------------|
 | Package                      | Z_MIA_ACTIONS                                                                                               |
 | IDE Action Name              | Z_MIA_NEW_CLASS                                                                                             |
-| Title                        | Create new class                                                                                            |
+| Title                        | MIA: Create new class                                                                                       |
 | Summary                      | Creates a new class with interface and optionally a factory and an injector for decoupling and testability. |
 | Implementing Class           | ZCL_MIA_NEWCLASS_ACTION                                                                                     |
 | Input UI Configuration Class | ZCL_MIA_NEWCLASS_INPUT                                                                                      |
@@ -28,7 +28,7 @@ Currently, IDE Actions cannot be saved in Git, so the IDE Actions must first be 
 |------------------------------|-------------------------------------------------------------------------------------------------------------|
 | Package                      | Z_MIA_ACTIONS                                                                                               |
 | IDE Action Name              | Z_MIA_SELECT_CONVERTER                                                                                      |
-| Title                        | Migrate SELECT statement                                                                                    |
+| Title                        | MIA: Migrate SELECT statement                                                                               |
 | Summary                      | Migrates an Open SQL statement to ABAP SQL in the new notation and replaces tables with Core Data Services. |
 | Implementing Class           | ZCL_MIA_SELECTCONVERT_ACTION                                                                                |
 | Input UI Configuration Class |                                                                                                             |
@@ -43,7 +43,7 @@ Currently, IDE Actions cannot be saved in Git, so the IDE Actions must first be 
 |------------------------------|-------------------------------------------------------------------------------------------------------------|
 | Package                      | Z_MIA_ACTIONS                                                                                               |
 | IDE Action Name              | Z_MIA_CODE_SNIPPETS                                                                                         |
-| Title                        | Generate Code Snippet                                                                                       |
+| Title                        | MIA: Generate Code Snippet                                                                                  |
 | Summary                      | Choose from various code snippets and increase your development speed.                                      |
 | Implementing Class           | ZCL_MIA_CODE_SNIPPET_ACTION                                                                                 |
 | Input UI Configuration Class | ZCL_MIA_CODE_SNIPPET_INPUT                                                                                  |
@@ -58,7 +58,7 @@ Currently, IDE Actions cannot be saved in Git, so the IDE Actions must first be 
 |------------------------------|-------------------------------------------------------------------------------------------------------------|
 | Package                      | Z_MIA_ACTIONS                                                                                               |
 | IDE Action Name              | Z_MIA_SCOPING                                                                                               |
-| Title                        | Scope Launchpad                                                                                             |
+| Title                        | MIA: Scope Launchpad                                                                                        |
 | Summary                      | Scope Launchpad Space and Page template to be available in configuration and for role assignment.           |
 | Implementing Class           | ZCL_MIA_SCOPING_ACTION                                                                                      |
 | Input UI Configuration Class | ZCL_MIA_SCOPING_INPUT                                                                                       |
@@ -73,7 +73,7 @@ Currently, IDE Actions cannot be saved in Git, so the IDE Actions must first be 
 |------------------------------|-------------------------------------------------------------------------------------------------------------|
 | Package                      | Z_MIA_ACTIONS                                                                                               |
 | IDE Action Name              | Z_MIA_CONSUMPTION                                                                                           |
-| Title                        | Consumption Model fields                                                                                    |
+| Title                        | MIA: Consumption Model fields                                                                               |
 | Summary                      | Fill the fields from the Consumption Model of a specific structure.                                         |
 | Implementing Class           | ZCL_MIA_CONSUMPTION_ACTION                                                                                  |
 | Input UI Configuration Class | ZCL_MIA_CONSUMPTION_INPUT                                                                                   |
@@ -82,7 +82,7 @@ Currently, IDE Actions cannot be saved in Git, so the IDE Actions must first be 
 
 ### RAP Analyzer
 
-![Consumption Model](./img/image-10.png)
+![RAP Analyzer](./img/image-10.png)
 
 | Object                       | Value                                                                                                       |
 |------------------------------|-------------------------------------------------------------------------------------------------------------|
@@ -97,7 +97,7 @@ Currently, IDE Actions cannot be saved in Git, so the IDE Actions must first be 
 
 ### RAP Extension Assistant
 
-![Consumption Model](./img/image-09.png)
+![RAP Extension Assistant](./img/image-09.png)
 
 | Object                       | Value                                                                                                       |
 |------------------------------|-------------------------------------------------------------------------------------------------------------|
@@ -177,9 +177,13 @@ company_description : abap.char(255);
 
 Analyzes the service and the RAP pattern used, and finally displays an overview of the most important objects and hierarchies. This should enable easier analysis and navigation within the RAP object.
 
+![RAP Analyzer](./img/image-11.png)
+
 ### RAP Extension Assistant
 
 Returns some suggested extension scenarios to help extend the RAP object. The solution is suggested step by step, allowing developers to implement it with code examples.
+
+![RAP Extension Assistant](./img/image-12.png)
 
 ## Influence on System
 
