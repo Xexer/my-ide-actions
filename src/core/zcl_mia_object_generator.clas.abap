@@ -249,11 +249,6 @@ CLASS zcl_mia_object_generator IMPLEMENTATION.
   METHOD validate_configuration.
     DATA dummy TYPE string ##NEEDED.
 
-    IF run_setting-transport IS INITIAL.
-      MESSAGE e001(z_mia_core) INTO dummy.
-      INSERT xco_cp=>sy->message( ) INTO TABLE result.
-    ENDIF.
-
     IF run_setting-package IS INITIAL.
       MESSAGE e002(z_mia_core) INTO dummy.
       INSERT xco_cp=>sy->message( ) INTO TABLE result.
