@@ -3,6 +3,11 @@ CLASS zcl_mia_core_factory DEFINITION
   CREATE PUBLIC.
 
   PUBLIC SECTION.
+    "! Generate a JSON Editor object
+    "! @parameter result | JSON Editor
+    CLASS-METHODS create_json_editor
+      RETURNING VALUE(result) TYPE REF TO zif_mia_json_editor.
+
     "! Generate Object Generator
     "! @parameter result | Object Generator
     CLASS-METHODS create_object_generator
@@ -115,5 +120,10 @@ CLASS zcl_mia_core_factory IMPLEMENTATION.
                      WHEN zif_mia_rap_analyzer=>classifications-standard  THEN NEW zcl_mia_extension_classic( object )
                      WHEN zif_mia_rap_analyzer=>classifications-custom    THEN NEW zcl_mia_extension_custom( object )
                      WHEN zif_mia_rap_analyzer=>classifications-singleton THEN NEW zcl_mia_extension_singleton( object ) ).
+  ENDMETHOD.
+
+
+  METHOD create_json_editor.
+    RETURN NEW zcl_mia_json_editor( ).
   ENDMETHOD.
 ENDCLASS.
