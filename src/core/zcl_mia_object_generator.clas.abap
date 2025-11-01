@@ -341,7 +341,7 @@ CLASS zcl_mia_object_generator IMPLEMENTATION.
 
     method_name = |INJECT_{ run_setting-inst_name }|.
     DATA(method) = injector_object->for-insert->definition->section-public->add_class_method( method_name ).
-    method->add_importing_parameter( 'DOUBLE' )->set_type( xco_cp_abap=>interface( run_setting-interface ) ).
+    method->add_importing_parameter( 'DOUBLE' )->set_type( xco_cp_abap=>interface( run_setting-interface ) )->set_optional( ).
 
     method_content = |{ run_setting-factory }=>double_{ run_setting-inst_name } = double.|.
     injector_object->for-insert->implementation->add_method( CONV #( method_name ) )->set_source(
