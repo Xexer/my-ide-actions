@@ -124,6 +124,19 @@ CLASS zcl_mia_object_generator IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD zif_mia_object_generator~generate_package_structure.
+    " !!! Seems there is no package support ATM
+
+*    DATA(put_operation) = xco_cp_generation=>environment->dev_system( run_setting-transport )->create_put_operation( ).
+*
+*    IF activate_objects = abap_true.
+*      DATA(operation_result) = put_operation->execute( ).
+*    ELSE.
+*      operation_result = put_operation->execute( VALUE #( ( xco_cp_generation=>put_operation_option->skip_activation ) ) ).
+*    ENDIF.
+  ENDMETHOD.
+
+
   METHOD generate_interface.
     IF run_setting-interface IS INITIAL.
       RETURN.
