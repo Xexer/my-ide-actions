@@ -35,6 +35,7 @@ CLASS zcl_mia_metadata_input DEFINITION
         target_qualifier TYPE string,
         "! <p class="shorttext">Reference</p>
         target_element   TYPE string,
+        old              TYPE string,
       END OF facet.
     TYPES facets TYPE STANDARD TABLE OF facet WITH EMPTY KEY.
 
@@ -66,13 +67,29 @@ CLASS zcl_mia_metadata_input DEFINITION
       END OF input.
 
   PRIVATE SECTION.
+    CONSTANTS hide_button       TYPE string VALUE 'HIDE'.
+    CONSTANTS qualifier_general TYPE string VALUE 'GENERAL'.
+
+    "! Get the initial fields from the CDS as list
+    "! @parameter name   | Name of the CDS
+    "! @parameter result | List of fields
     METHODS get_fields_for_cds
       IMPORTING !name         TYPE string
       RETURNING VALUE(result) TYPE fields.
 
+    "! Get the initial facets for this CDS
+    "! @parameter name   | Name of the CDS
+    "! @parameter result | List of facets
     METHODS get_facets_for_cds
       IMPORTING !name         TYPE string
       RETURNING VALUE(result) TYPE facets.
+
+    "! Harmonize Composition to ID
+    "! @parameter alias  | Alias for the composition
+    "! @parameter result | ID for Facet
+    METHODS harmonize_id
+      IMPORTING !alias        TYPE sxco_ddef_alias_name
+      RETURNING VALUE(result) TYPE string.
 ENDCLASS.
 
 
@@ -92,12 +109,27 @@ CLASS zcl_mia_metadata_input IMPLEMENTATION.
 
     DATA(facet_table) = configuration->get_structured_table( 'facets' ).
     facet_table->set_layout( if_sd_config_element=>layout-table ).
+    DATA(facet_line) = facet_table->get_line_structure( ).
+    facet_line->get_element( `old` )->set_hidden( ).
+    facet_line->set_sideeffect( after_update = abap_true ).
 
     DATA(field_table) = configuration->get_structured_table( 'fields' ).
     field_table->set_layout( if_sd_config_element=>layout-table ).
+    field_table->set_actions( VALUE #( ( kind = if_sd_actions=>kind-model id = hide_button title = 'Hide' ) ) ).
 
     RETURN ui_information_factory->for_abap_type( abap_type     = input
                                                   configuration = configuration ).
+  ENDMETHOD.
+
+
+  METHOD if_aia_sd_action_input~get_side_effect_provider.
+    RETURN cl_sd_sideeffect_provider=>create( determination = NEW zcl_mia_metadata_side_effect( ) ).
+  ENDMETHOD.
+
+
+  METHOD if_aia_sd_action_input~get_action_provider.
+    RETURN cl_sd_action_provider=>create(
+        VALUE #( ( kind = if_sd_actions=>kind-model id = hide_button handler = 'ZCL_MIA_METADATA_HIDE' ) ) ).
   ENDMETHOD.
 
 
@@ -121,7 +153,7 @@ CLASS zcl_mia_metadata_input IMPLEMENTATION.
         actual->name = content-original_name.
       ENDIF.
 
-      actual->qualifier          = 'GENERAL'.
+      actual->qualifier          = qualifier_general.
       actual->pos_identification = identification.
       identification += 10.
 
@@ -146,20 +178,39 @@ CLASS zcl_mia_metadata_input IMPLEMENTATION.
 
     INSERT VALUE #( ) INTO TABLE result REFERENCE INTO DATA(actual).
     actual->id               = `idGeneral`.
-    actual->label            = `General Informations`.
+    actual->label            = `General Information`.
     actual->type             = facet_types-identification.
-    actual->target_qualifier = `GENERAL`.
+    actual->target_qualifier = qualifier_general.
     actual->position         = 10.
+    actual->old              = actual->target_qualifier.
 
     DATA(position) = 20.
 
     LOOP AT cds->compositions->all->get( ) INTO DATA(composition).
+      DATA(alias) = composition->content( )->get_alias( ).
+
+      IF line_exists( result[ target_element = alias ] ).
+        CONTINUE.
+      ENDIF.
+
       INSERT VALUE #( ) INTO TABLE result REFERENCE INTO actual.
-      actual->id             = `idRef`.
+      actual->id             = harmonize_id( alias ).
       actual->type           = facet_types-lineitem.
       actual->target_element = composition->content( )->get_alias( ).
       actual->position       = position.
       position += 10.
     ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD harmonize_id.
+    DATA(local_id) = alias.
+    IF substring( val = local_id
+                  len = 1 ) = `_`.
+      local_id = substring( val = local_id
+                            off = 1 ).
+    ENDIF.
+
+    RETURN |id{ local_id }|.
   ENDMETHOD.
 ENDCLASS.

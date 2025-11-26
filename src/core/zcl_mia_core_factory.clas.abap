@@ -8,6 +8,11 @@ CLASS zcl_mia_core_factory DEFINITION
     CLASS-METHODS create_json_editor
       RETURNING VALUE(result) TYPE REF TO zif_mia_json_editor.
 
+    "! Create Metadata Generator
+    "! @parameter result | Metadata Generator
+    CLASS-METHODS create_metadata
+      RETURNING VALUE(result) TYPE REF TO zif_mia_metadata.
+
     "! Generate Object Generator
     "! @parameter result | Object Generator
     CLASS-METHODS create_object_generator
@@ -125,5 +130,10 @@ CLASS zcl_mia_core_factory IMPLEMENTATION.
 
   METHOD create_json_editor.
     RETURN NEW zcl_mia_json_editor( ).
+  ENDMETHOD.
+
+
+  METHOD create_metadata.
+    RETURN NEW zcl_mia_metadata( ).
   ENDMETHOD.
 ENDCLASS.

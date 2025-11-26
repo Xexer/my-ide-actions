@@ -9,7 +9,6 @@ ENDCLASS.
 
 CLASS zcl_mia_metadata_action IMPLEMENTATION.
   METHOD if_aia_action~run.
-    " TODO: variable is assigned but never used (ABAP cleaner)
     DATA input TYPE zcl_mia_metadata_input=>input.
 
     TRY.
@@ -22,10 +21,11 @@ CLASS zcl_mia_metadata_action IMPLEMENTATION.
     DATA(resource) = CAST if_adt_context_src_based_obj( context->get_focused_resource( ) ).
     DATA(position) = resource->get_position( ).
 
-    DATA(mapped_fields) = ``.
+    DATA(metadata) = zcl_mia_core_factory=>create_metadata( ).
+    DATA(new_metadata_code) = metadata->generate_metadata_code( input ).
 
     DATA(change_result) = cl_aia_result_factory=>create_source_change_result( ).
-    change_result->add_code_replacement_delta( content            = mapped_fields
+    change_result->add_code_replacement_delta( content            = new_metadata_code
                                                selection_position = position ).
     result = change_result.
   ENDMETHOD.
