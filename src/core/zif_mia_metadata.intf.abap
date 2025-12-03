@@ -11,4 +11,13 @@ INTERFACE zif_mia_metadata
   METHODS generate_metadata_code
     IMPORTING !input        TYPE metadata_input
     RETURNING VALUE(result) TYPE string.
+
+  "! Parse the source code for the input structure
+  "! @parameter core_data_service | CDS View name
+  "! @parameter code              | Source Code of Metadata
+  "! @parameter result            | Input for Action
+  METHODS parse_source_code_to_input
+    IMPORTING core_data_service TYPE string
+              !code             TYPE string_table
+    RETURNING VALUE(result)     TYPE metadata_input.
 ENDINTERFACE.
