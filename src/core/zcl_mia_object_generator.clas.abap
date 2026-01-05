@@ -125,7 +125,7 @@ CLASS zcl_mia_object_generator IMPLEMENTATION.
 
 
   METHOD zif_mia_object_generator~generate_package_structure.
-    " !!! Seems there is no package support ATM
+    " !!! Seems there is no package support atm
 
 *    DATA(put_operation) = xco_cp_generation=>environment->dev_system( run_setting-transport )->create_put_operation( ).
 *
@@ -224,7 +224,7 @@ CLASS zcl_mia_object_generator IMPLEMENTATION.
 
     method_name = |INJECT_{ run_setting-inst_name }|.
     DATA(method) = specification->definition->section-public->add_class_method( method_name ).
-    method->add_importing_parameter( 'DOUBLE' )->set_type( xco_cp_abap=>interface( run_setting-interface ) ).
+    method->add_importing_parameter( 'DOUBLE' )->set_type( xco_cp_abap=>interface( run_setting-interface ) )->set_optional( ).
 
     method_content = |{ run_setting-factory }=>double_{ run_setting-inst_name } = double.|.
     specification->implementation->add_method( method_name )->set_source( VALUE #( ( method_content ) ) ).
