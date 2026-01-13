@@ -110,6 +110,21 @@ Currently, IDE Actions cannot be saved in Git, so the IDE Actions must first be 
 | Number of Focused Resources  | One                                                                                                         |
 | Object Type (Filter)         | SRVB                                                                                                        |
 
+### Metadata Wizard
+
+![Metadata Wizard](./img/image-13.png)
+
+| Object                       | Value                                                                                                       |
+|------------------------------|-------------------------------------------------------------------------------------------------------------|
+| Package                      | Z_MIA_METADATA                                                                                              |
+| IDE Action Name              | Z_MIA_RAP_EXTENSION                                                                                         |
+| Title                        | MIA: Metadata Wizard                                                                                        |
+| Summary                      | Generates the Metadata Extension configuration for an entity.                                               |
+| Implementing Class           | ZCL_MIA_METADATA_ACTION                                                                                     |
+| Input UI Configuration Class | ZCL_MIA_METADATA_INPUT                                                                                      |
+| Number of Focused Resources  | One                                                                                                         |
+| Object Type (Filter)         | DDLX/EX                                                                                                     |
+
 ## Features
 
 Currently the following actions and features are included.
@@ -184,6 +199,10 @@ Analyzes the service and the RAP pattern used, and finally displays an overview 
 Returns some suggested extension scenarios to help extend the RAP object. The solution is suggested step by step, allowing developers to implement it with code examples.
 
 ![RAP Extension Assistant](./img/image-12.png)
+
+### Metadata Wizard
+
+Creates UI annotations for the fields in the current metadata extension. Various aspects can be customized before the field annotations are generated. The fields and their associations are taken into account, and various values ​​can be maintained.
 
 ## Influence on System
 
