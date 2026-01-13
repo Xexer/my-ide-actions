@@ -107,9 +107,9 @@ CLASS zcl_mia_metadata_input IMPLEMENTATION.
 
     DATA(field_table) = configuration->get_structured_table( 'fields' ).
     field_table->set_layout( if_sd_config_element=>layout-table ).
-    field_table->set_actions( VALUE #( ( kind = if_sd_actions=>kind-model id = hide_button title = 'Hide' ) ) ).
     DATA(field_line) = field_table->get_line_structure( ).
     field_line->get_element( `hide_field` )->set_values( if_sd_config_element=>values_kind-domain_specific_named_items ).
+    field_line->set_actions( VALUE #( ( kind = if_sd_actions=>kind-model id = hide_button title = 'Hide' ) ) ).
 
     RETURN ui_information_factory->for_abap_type( abap_type     = input
                                                   configuration = configuration ).

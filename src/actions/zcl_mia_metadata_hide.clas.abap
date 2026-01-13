@@ -18,7 +18,7 @@ CLASS zcl_mia_metadata_hide IMPLEMENTATION.
         CLEAR input.
     ENDTRY.
 
-    LOOP AT selected_lines INTO DATA(line) WHERE row <> -1.
+    LOOP AT selected_lines INTO DATA(line) WHERE row <> path->c_no_index.
       DATA(field) = REF #( input-fields[ line-row ] ).
       CLEAR: field->pos_fieldgroup, field->pos_identification, field->pos_lineitem, field->pos_selection,
              field->qualifier.
