@@ -13,6 +13,8 @@ CLASS zcl_mia_metadata_input DEFINITION
         fieldgroup     TYPE string VALUE `FGROUP`,
         "! <p class="shorttext">LineItem</p>
         lineitem       TYPE string VALUE `LINEITEM`,
+        "! <p class="shorttext">Collection</p>
+        collection     TYPE string VALUE `COLLECTION`,
       END OF facet_types.
 
     "! $values { @link zcl_mia_metadata_input.data:facet_types }

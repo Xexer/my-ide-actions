@@ -126,7 +126,8 @@ CLASS zcl_mia_metadata IMPLEMENTATION.
       DATA(type) = SWITCH #( facet-type
                              WHEN zcl_mia_metadata_input=>facet_types-identification THEN `#IDENTIFICATION_REFERENCE`
                              WHEN zcl_mia_metadata_input=>facet_types-fieldgroup     THEN `#FIELDGROUP_REFERENCE`
-                             WHEN zcl_mia_metadata_input=>facet_types-lineitem       THEN `#LINEITEM_REFERENCE` ).
+                             WHEN zcl_mia_metadata_input=>facet_types-lineitem       THEN `#LINEITEM_REFERENCE`
+                             WHEN zcl_mia_metadata_input=>facet_types-collection     THEN `#COLLECTION` ).
       INSERT |type: '{ type }'| INTO TABLE local_code.
     ENDIF.
 
