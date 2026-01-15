@@ -104,7 +104,8 @@ CLASS zcl_mia_metadata_input IMPLEMENTATION.
     facet_table->set_layout( if_sd_config_element=>layout-table ).
     DATA(facet_line) = facet_table->get_line_structure( ).
     facet_line->get_element( `old` )->set_hidden( ).
-    facet_line->set_sideeffect( after_update = abap_true ).
+    facet_line->set_sideeffect( after_create = abap_true
+                                after_update = abap_true ).
     facet_line->get_element( `hide_facet` )->set_values( if_sd_config_element=>values_kind-domain_specific_named_items ).
 
     DATA(field_table) = configuration->get_structured_table( 'fields' ).

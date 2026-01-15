@@ -53,6 +53,8 @@ CLASS zcl_mia_metadata DEFINITION
       IMPORTING !alias        TYPE sxco_ddef_alias_name
       RETURNING VALUE(result) TYPE string.
 
+    "! Analyze the metadata code to generate input structure
+    "! @parameter code | Full Code of DDLX
     METHODS analyze_metadata_code
       IMPORTING !code TYPE string_table.
 ENDCLASS.
@@ -61,6 +63,7 @@ ENDCLASS.
 CLASS zcl_mia_metadata IMPLEMENTATION.
   METHOD zif_mia_metadata~generate_metadata_code.
     me->input = input.
+    SORT me->input-facets BY position ASCENDING.
     CLEAR code.
 
     add_code( |@UI.facet: [| ).
@@ -119,7 +122,7 @@ CLASS zcl_mia_metadata IMPLEMENTATION.
     ENDIF.
 
     IF facet-position IS NOT INITIAL.
-      INSERT |position: '{ facet-position }'| INTO TABLE local_code.
+      INSERT |position: { facet-position }| INTO TABLE local_code.
     ENDIF.
 
     IF facet-type IS NOT INITIAL.
@@ -128,7 +131,7 @@ CLASS zcl_mia_metadata IMPLEMENTATION.
                              WHEN zcl_mia_metadata_input=>facet_types-fieldgroup     THEN `#FIELDGROUP_REFERENCE`
                              WHEN zcl_mia_metadata_input=>facet_types-lineitem       THEN `#LINEITEM_REFERENCE`
                              WHEN zcl_mia_metadata_input=>facet_types-collection     THEN `#COLLECTION` ).
-      INSERT |type: '{ type }'| INTO TABLE local_code.
+      INSERT |type: { type }| INTO TABLE local_code.
     ENDIF.
 
     IF facet-target_qualifier IS NOT INITIAL.

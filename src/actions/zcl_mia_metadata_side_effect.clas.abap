@@ -25,6 +25,8 @@ CLASS zcl_mia_metadata_side_effect IMPLEMENTATION.
       facet->old = facet->target_qualifier.
     ENDLOOP.
 
+    SORT input-facets BY position ASCENDING.
+
     result = input.
   ENDMETHOD.
 ENDCLASS.
