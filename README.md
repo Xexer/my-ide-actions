@@ -230,4 +230,4 @@ Here you can find information about whether IDE Actions make changes to the syst
 ## Public Material
 
 - Software-Heroes: [ADT - My IDE Actions](https://software-heroes.com/en/blog/tools-adt-my-ide-actions-en)
-- SAP Community: [[MIA] My IDE Actions](https://community.sap.com/t5/technology-blogs-by-members/mia-my-ide-actions/ba-p/14019000)
+- SAP Community: [[MIA] My IDE Actions](https://community.sap.com/t5/technology-blog-posts-by-members/mia-my-ide-actions/ba-p/14019000)
