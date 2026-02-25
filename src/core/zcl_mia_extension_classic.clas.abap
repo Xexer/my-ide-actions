@@ -149,7 +149,7 @@ CLASS zcl_mia_extension_classic IMPLEMENTATION.
         number      = `b`
         option      = zif_mia_extension_scenario=>options-choose
         description = |Add field <strong>{ cds_field }</strong> to Metadata Extension { link_ref } as Identification.|
-        code        = |@UI.Identification: [ \{ position: 10, qualifier: '' \} ]<br>{ cds_field };| ).
+        code        = |@UI.identification: [ \{ position: 10, qualifier: '' \} ]<br>{ cds_field };| ).
 
     collect_step(
         number      = `c`
@@ -162,7 +162,7 @@ CLASS zcl_mia_extension_classic IMPLEMENTATION.
           number      = `d`
           option      = zif_mia_extension_scenario=>options-choose
           description = |Add field <strong>{ cds_field }</strong> to Metadata Extension { link_ref } as SelectionField.|
-          code        = |@UI.SelectionField: [ \{ position: 10 \} ]<br>{ cds_field };| ).
+          code        = |@UI.selectionField: [ \{ position: 10 \} ]<br>{ cds_field };| ).
 
     ENDIF.
   ENDMETHOD.
