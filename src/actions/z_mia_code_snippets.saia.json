@@ -1,0 +1,31 @@
+{
+  "formatVersion": "1",
+  "header": {
+    "description": "Code Snippets",
+    "originalLanguage": "en",
+    "abapLanguageVersion": "cloudDevelopment"
+  },
+  "generalInformation": {
+    "title": "MIA: Generate Code Snippet",
+    "summary": "Choose from various code snippets and increase your development speed.",
+    "implementingClass": "ZCL_MIA_CODE_SNIPPET_ACTION",
+    "inputUiConfigurationClass": "ZCL_MIA_CODE_SNIPPET_INPUT"
+  },
+  "filters": {
+    "numberOfFocusedResources": "exactlyOne",
+    "supportedDevObjectTypes": [
+      {
+        "workbenchObjectType": "BDEF"
+      },
+      {
+        "workbenchObjectType": "CLAS"
+      },
+      {
+        "workbenchObjectType": "DDLS"
+      },
+      {
+        "workbenchObjectType": "TABL"
+      }
+    ]
+  }
+}

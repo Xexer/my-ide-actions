@@ -1,0 +1,25 @@
+{
+  "formatVersion": "1",
+  "header": {
+    "description": "Scope Launchpad Items",
+    "originalLanguage": "en",
+    "abapLanguageVersion": "cloudDevelopment"
+  },
+  "generalInformation": {
+    "title": "MIA: Scope Launchpad",
+    "summary": "Scope Launchpad Space and Page template to be available in configuration and for role assignment.",
+    "implementingClass": "ZCL_MIA_SCOPING_ACTION",
+    "inputUiConfigurationClass": "ZCL_MIA_SCOPING_INPUT"
+  },
+  "filters": {
+    "numberOfFocusedResources": "atLeastOne",
+    "supportedDevObjectTypes": [
+      {
+        "workbenchObjectType": "UIPG"
+      },
+      {
+        "workbenchObjectType": "UIST"
+      }
+    ]
+  }
+}

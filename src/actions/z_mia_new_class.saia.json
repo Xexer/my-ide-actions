@@ -1,0 +1,22 @@
+{
+  "formatVersion": "1",
+  "header": {
+    "description": "Create new class",
+    "originalLanguage": "en",
+    "abapLanguageVersion": "cloudDevelopment"
+  },
+  "generalInformation": {
+    "title": "MIA: Create new class",
+    "summary": "Creates a new class with interface and optionally a factory and an injector for decoupling and testability.",
+    "implementingClass": "ZCL_MIA_NEWCLASS_ACTION",
+    "inputUiConfigurationClass": "ZCL_MIA_NEWCLASS_INPUT"
+  },
+  "filters": {
+    "numberOfFocusedResources": "exactlyOne",
+    "supportedDevObjectTypes": [
+      {
+        "workbenchObjectType": "DEVC"
+      }
+    ]
+  }
+}

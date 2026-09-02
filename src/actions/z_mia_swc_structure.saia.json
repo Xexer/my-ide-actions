@@ -1,0 +1,22 @@
+{
+  "formatVersion": "1",
+  "header": {
+    "description": "SWC Structure",
+    "originalLanguage": "en",
+    "abapLanguageVersion": "cloudDevelopment"
+  },
+  "generalInformation": {
+    "title": "MIA: Generate SWC Structure",
+    "summary": "Generates the structure for a software component with regard to the different layers and packages.",
+    "implementingClass": "ZCL_MIA_SWC_STRUCTURE_ACTION",
+    "inputUiConfigurationClass": "ZCL_MIA_SWC_STRUCTURE_INPUT"
+  },
+  "filters": {
+    "numberOfFocusedResources": "exactlyOne",
+    "supportedDevObjectTypes": [
+      {
+        "workbenchObjectType": "DEVC"
+      }
+    ]
+  }
+}

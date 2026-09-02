@@ -1,0 +1,22 @@
+{
+  "formatVersion": "1",
+  "header": {
+    "description": "JSON Editor",
+    "originalLanguage": "en",
+    "abapLanguageVersion": "cloudDevelopment"
+  },
+  "generalInformation": {
+    "title": "MIA: JSON Editor",
+    "summary": "Inline editing of a JSON string or creation of a new variable from a JSON string.",
+    "implementingClass": "ZCL_MIA_JSON_EDITOR_ACTION",
+    "inputUiConfigurationClass": "ZCL_MIA_JSON_EDITOR_INPUT"
+  },
+  "filters": {
+    "numberOfFocusedResources": "exactlyOne",
+    "supportedDevObjectTypes": [
+      {
+        "workbenchObjectType": "CLAS"
+      }
+    ]
+  }
+}

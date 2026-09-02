@@ -1,0 +1,23 @@
+{
+  "formatVersion": "1",
+  "header": {
+    "description": "Metadata Wizard",
+    "originalLanguage": "en",
+    "abapLanguageVersion": "cloudDevelopment"
+  },
+  "generalInformation": {
+    "title": "MIA: Metadata Wizard",
+    "summary": "Generates the Metadata Extension configuration for an entity.",
+    "implementingClass": "ZCL_MIA_METADATA_ACTION",
+    "inputUiConfigurationClass": "ZCL_MIA_METADATA_INPUT"
+  },
+  "filters": {
+    "numberOfFocusedResources": "exactlyOne",
+    "supportedDevObjectTypes": [
+      {
+        "workbenchObjectType": "DDLX",
+        "workbenchObjectSubtype": "EX"
+      }
+    ]
+  }
+}

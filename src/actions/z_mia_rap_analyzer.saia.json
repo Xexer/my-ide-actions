@@ -1,0 +1,21 @@
+{
+  "formatVersion": "1",
+  "header": {
+    "description": "RAP Analyzer",
+    "originalLanguage": "en",
+    "abapLanguageVersion": "cloudDevelopment"
+  },
+  "generalInformation": {
+    "title": "MIA: Analyze RAP Object",
+    "summary": "Analyze the RAP object and list all objects that contain to this object.",
+    "implementingClass": "ZCL_MIA_RAP_ANAYLZER_ACTION"
+  },
+  "filters": {
+    "numberOfFocusedResources": "exactlyOne",
+    "supportedDevObjectTypes": [
+      {
+        "workbenchObjectType": "SRVB"
+      }
+    ]
+  }
+}

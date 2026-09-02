@@ -1,0 +1,22 @@
+{
+  "formatVersion": "1",
+  "header": {
+    "description": "RAP Extension Assistant",
+    "originalLanguage": "en",
+    "abapLanguageVersion": "cloudDevelopment"
+  },
+  "generalInformation": {
+    "title": "MIA: RAP Extension Assistant",
+    "summary": "Extend a RAP object via the different layers with a little assistant for the needed steps.",
+    "implementingClass": "ZCL_MIA_RAP_EXTENSION_ACTION",
+    "inputUiConfigurationClass": "ZCL_MIA_RAP_EXTENSION_INPUT"
+  },
+  "filters": {
+    "numberOfFocusedResources": "exactlyOne",
+    "supportedDevObjectTypes": [
+      {
+        "workbenchObjectType": "SRVB"
+      }
+    ]
+  }
+}

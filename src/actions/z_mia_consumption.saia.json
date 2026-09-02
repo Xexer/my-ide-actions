@@ -1,0 +1,22 @@
+{
+  "formatVersion": "1",
+  "header": {
+    "description": "Consumption Model fields",
+    "originalLanguage": "en",
+    "abapLanguageVersion": "cloudDevelopment"
+  },
+  "generalInformation": {
+    "title": "MIA: Consumption Model fields",
+    "summary": "Fill the fields from the Consumption Model of a specific structure.",
+    "implementingClass": "ZCL_MIA_CONSUMPTION_ACTION",
+    "inputUiConfigurationClass": "ZCL_MIA_CONSUMPTION_INPUT"
+  },
+  "filters": {
+    "numberOfFocusedResources": "exactlyOne",
+    "supportedDevObjectTypes": [
+      {
+        "workbenchObjectType": "DDLS"
+      }
+    ]
+  }
+}

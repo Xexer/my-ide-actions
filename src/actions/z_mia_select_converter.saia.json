@@ -1,0 +1,21 @@
+{
+  "formatVersion": "1",
+  "header": {
+    "description": "Migrate SELECT statement",
+    "originalLanguage": "en",
+    "abapLanguageVersion": "cloudDevelopment"
+  },
+  "generalInformation": {
+    "title": "MIA: Migrate SELECT statement",
+    "summary": "Migrates an Open SQL statement to ABAP SQL in the new notation and replaces tables with Core Data Services.",
+    "implementingClass": "ZCL_MIA_SELECTCONVERT_ACTION"
+  },
+  "filters": {
+    "numberOfFocusedResources": "exactlyOne",
+    "supportedDevObjectTypes": [
+      {
+        "workbenchObjectType": "CLAS"
+      }
+    ]
+  }
+}
