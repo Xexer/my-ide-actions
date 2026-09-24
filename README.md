@@ -3,127 +3,18 @@ Since release 2502, there have been IDE Actions in the ABAP Environment. This ma
 
 ## Installation
 
-Currently, IDE Actions cannot be saved in Git, so the IDE Actions must first be created after installation. Here you will find all steps to create them.
+Use the abapGit Plugin or the abapGit Client to import the IDE actions in your system. With the right authorizations they are then available in your Eclipse IDE with ABAP Development Tools.
 
-### Create new class
+The following actions are included:
 
-![Create class Action](./img/image-00.png)
-
-| Object                       | Value                                                                                                       |
-|------------------------------|-------------------------------------------------------------------------------------------------------------|
-| Package                      | Z_MIA_ACTIONS                                                                                               |
-| IDE Action Name              | Z_MIA_NEW_CLASS                                                                                             |
-| Title                        | MIA: Create new class                                                                                       |
-| Summary                      | Creates a new class with interface and optionally a factory and an injector for decoupling and testability. |
-| Implementing Class           | ZCL_MIA_NEWCLASS_ACTION                                                                                     |
-| Input UI Configuration Class | ZCL_MIA_NEWCLASS_INPUT                                                                                      |
-| Number of Focused Resources  | One                                                                                                         |
-| Object Type (Filter)         | DEVC                                                                                                        |
-
-### SELECT Converter
-
-![Create class Action](./img/image-02.png)
-
-| Object                       | Value                                                                                                       |
-|------------------------------|-------------------------------------------------------------------------------------------------------------|
-| Package                      | Z_MIA_ACTIONS                                                                                               |
-| IDE Action Name              | Z_MIA_SELECT_CONVERTER                                                                                      |
-| Title                        | MIA: Migrate SELECT statement                                                                               |
-| Summary                      | Migrates an Open SQL statement to ABAP SQL in the new notation and replaces tables with Core Data Services. |
-| Implementing Class           | ZCL_MIA_SELECTCONVERT_ACTION                                                                                |
-| Input UI Configuration Class |                                                                                                             |
-| Number of Focused Resources  | One                                                                                                         |
-| Object Type (Filter)         | CLAS                                                                                                        |
-
-### Code Snippets
-
-![Create class Action](./img/image-04.png)
-
-| Object                       | Value                                                                                                       |
-|------------------------------|-------------------------------------------------------------------------------------------------------------|
-| Package                      | Z_MIA_ACTIONS                                                                                               |
-| IDE Action Name              | Z_MIA_CODE_SNIPPETS                                                                                         |
-| Title                        | MIA: Generate Code Snippet                                                                                  |
-| Summary                      | Choose from various code snippets and increase your development speed.                                      |
-| Implementing Class           | ZCL_MIA_CODE_SNIPPET_ACTION                                                                                 |
-| Input UI Configuration Class | ZCL_MIA_CODE_SNIPPET_INPUT                                                                                  |
-| Number of Focused Resources  | One                                                                                                         |
-| Object Type (Filter)         | BDEF; CLAS; DDLS; TABL                                                                                      |
-
-### Scope Launchpad
-
-![Create class Action](./img/image-05.png)
-
-| Object                       | Value                                                                                                       |
-|------------------------------|-------------------------------------------------------------------------------------------------------------|
-| Package                      | Z_MIA_ACTIONS                                                                                               |
-| IDE Action Name              | Z_MIA_SCOPING                                                                                               |
-| Title                        | MIA: Scope Launchpad                                                                                        |
-| Summary                      | Scope Launchpad Space and Page template to be available in configuration and for role assignment.           |
-| Implementing Class           | ZCL_MIA_SCOPING_ACTION                                                                                      |
-| Input UI Configuration Class | ZCL_MIA_SCOPING_INPUT                                                                                       |
-| Number of Focused Resources  | At least One                                                                                                |
-| Object Type (Filter)         | UIPG; UIST                                                                                                  |
-
-### Consumption Model fields
-
-![Consumption Model](./img/image-07.png)
-
-| Object                       | Value                                                                                                       |
-|------------------------------|-------------------------------------------------------------------------------------------------------------|
-| Package                      | Z_MIA_ACTIONS                                                                                               |
-| IDE Action Name              | Z_MIA_CONSUMPTION                                                                                           |
-| Title                        | MIA: Consumption Model fields                                                                               |
-| Summary                      | Fill the fields from the Consumption Model of a specific structure.                                         |
-| Implementing Class           | ZCL_MIA_CONSUMPTION_ACTION                                                                                  |
-| Input UI Configuration Class | ZCL_MIA_CONSUMPTION_INPUT                                                                                   |
-| Number of Focused Resources  | One                                                                                                         |
-| Object Type (Filter)         | DDLS                                                                                                        |
-
-### RAP Analyzer
-
-![RAP Analyzer](./img/image-10.png)
-
-| Object                       | Value                                                                                                       |
-|------------------------------|-------------------------------------------------------------------------------------------------------------|
-| Package                      | Z_MIA_ACTIONS                                                                                               |
-| IDE Action Name              | Z_MIA_RAP_ANALYZER                                                                                          |
-| Title                        | MIA: Analyze RAP Object                                                                                     |
-| Summary                      | Analyze the RAP object and list all objects that contain to this object.                                    |
-| Implementing Class           | ZCL_MIA_RAP_ANAYLZER_ACTION                                                                                 |
-| Input UI Configuration Class |                                                                                                             |
-| Number of Focused Resources  | One                                                                                                         |
-| Object Type (Filter)         | SRVB                                                                                                        |
-
-### RAP Extension Assistant
-
-![RAP Extension Assistant](./img/image-09.png)
-
-| Object                       | Value                                                                                                       |
-|------------------------------|-------------------------------------------------------------------------------------------------------------|
-| Package                      | Z_MIA_ACTIONS                                                                                               |
-| IDE Action Name              | Z_MIA_RAP_EXTENSION                                                                                         |
-| Title                        | MIA: RAP Extension Assistant                                                                                |
-| Summary                      | Extend a RAP object via the different layers with a little assistant for the needed steps.                  |
-| Implementing Class           | ZCL_MIA_RAP_EXTENSION_ACTION                                                                                |
-| Input UI Configuration Class | ZCL_MIA_RAP_EXTENSION_INPUT                                                                                 |
-| Number of Focused Resources  | One                                                                                                         |
-| Object Type (Filter)         | SRVB                                                                                                        |
-
-### Metadata Wizard
-
-![Metadata Wizard](./img/image-13.png)
-
-| Object                       | Value                                                                                                       |
-|------------------------------|-------------------------------------------------------------------------------------------------------------|
-| Package                      | Z_MIA_METADATA                                                                                              |
-| IDE Action Name              | Z_MIA_RAP_EXTENSION                                                                                         |
-| Title                        | MIA: Metadata Wizard                                                                                        |
-| Summary                      | Generates the Metadata Extension configuration for an entity.                                               |
-| Implementing Class           | ZCL_MIA_METADATA_ACTION                                                                                     |
-| Input UI Configuration Class | ZCL_MIA_METADATA_INPUT                                                                                      |
-| Number of Focused Resources  | One                                                                                                         |
-| Object Type (Filter)         | DDLX/EX                                                                                                     |
+- MIA: Create new class 
+- MIA: Migrate SELECT statement  
+- MIA: Generate Code Snippet 
+- MIA: Scope Launchpad    
+- MIA: Consumption Model fields   
+- MIA: Analyze RAP Object  
+- MIA: RAP Extension Assistant
+- MIA: Metadata Wizard    
 
 ## Features
 
